@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="blue_background">#0D47A1</color>
+    <color name="teal_button">#006064</color>
+    <color name="teal_avatar">#00695C</color>
+    <color name="text_gray">#424242</color>
+    <color name="purple_item">#6200EE</color>
+    <color name="light_gray_item">#D3D3D3</color>
+
+    <color name="background_color">#FFFFFFFF</color>
+    <color name="text_primary_color">#FF000000</color>
+    <color name="card_background">#FFFFFFFF</color>
+
+    <!-- User Avatar Colors -->
+    <color name="avatar_blue">#1565C0</color>
+    <color name="avatar_red">#C62828</color>
+    <color name="avatar_green">#2E7D32</color>
+    <color name="avatar_orange">#EF6C00</color>
+    <color name="avatar_purple">#6A1B9A</color>
+</resources>

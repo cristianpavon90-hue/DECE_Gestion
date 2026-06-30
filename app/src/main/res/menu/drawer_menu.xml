@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/menu_mgmt">
+        <menu>
+            <item
+                android:id="@+id/menu_new_form"
+                android:icon="@android:drawable/ic_menu_add"
+                android:title="@string/menu_new_form" />
+            <item
+                android:id="@+id/BitacoraFragment"
+                android:icon="@android:drawable/ic_menu_recent_history"
+                android:title="@string/menu_bitacora" />
+            <item
+                android:id="@+id/menu_history"
+                android:icon="@android:drawable/ic_menu_save"
+                android:title="@string/menu_history" />
+        </menu>
+    </item>
+
+    <item android:title="@string/menu_tools">
+        <menu>
+            <item
+                android:id="@+id/menu_distribution"
+                android:icon="@android:drawable/ic_menu_share"
+                android:title="@string/menu_dist" />
+            <item
+                android:id="@+id/DocsFragment"
+                android:icon="@android:drawable/ic_menu_agenda"
+                android:title="@string/menu_docs" />
+        </menu>
+    </item>
+
+    <item android:title="@string/menu_sync">
+        <menu>
+            <item
+                android:id="@+id/NotificationManagerFragment"
+                android:icon="@android:drawable/ic_popup_reminder"
+                android:title="Gestionar Recordatorios" />
+            <item
+                android:id="@+id/menu_sync_now"
+                android:icon="@android:drawable/ic_popup_sync"
+                android:title="@string/menu_sync_now" />
+            <item
+                android:id="@+id/menu_offline_mode"
+                android:icon="@android:drawable/button_onoff_indicator_off"
+                android:title="@string/menu_offline" />
+            <item
+                android:id="@+id/menu_update_app"
+                android:icon="@android:drawable/stat_sys_download"
+                android:title="@string/menu_update" />
+        </menu>
+    </item>
+</menu>

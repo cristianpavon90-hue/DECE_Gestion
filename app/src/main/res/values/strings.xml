@@ -1,0 +1,238 @@
+<resources>
+    <string name="app_name">DECE Gestión</string>
+    <string name="action_settings">Configuración</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">Inicio</string>
+    <string name="second_fragment_label">Dashboard</string>
+    <string name="next">Siguiente</string>
+    <string name="previous">Anterior</string>
+
+    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID_HERE</string>
+
+    <!-- Navigation Drawer -->
+    <string name="menu_content_description">Menú de navegación</string>
+    <string name="menu_mgmt">Módulos de Gestión</string>
+    <string name="menu_bitacora">Bitácora de Seguimiento</string>
+    <string name="menu_new_form">Nuevo Formulario</string>
+    <string name="menu_history">Base de Datos / Histórico</string>
+    <string name="menu_tools">Sección de Herramientas</string>
+    <string name="menu_dist">Distribución Institucional (Desarrollo)</string>
+    <string name="menu_docs">Documentación de Apoyo</string>
+    <string name="menu_sync">Configuración de Sincronización</string>
+    <string name="menu_sync_now">Sincronizar ahora</string>
+    <string name="menu_offline">Modo Offline</string>
+    <string name="menu_update">Actualizar aplicación</string>
+    <string name="or_divider">O</string>
+
+    <!-- Bitacora -->
+    <string name="bitacora_title">Bitácora de Seguimiento</string>
+    <string name="bitacora_bio_exit">Salida Biométrico</string>
+    <string name="bitacora_comm_arrival">Llegada Comisión</string>
+    <string name="bitacora_comm_exit">Salida Comisión</string>
+    <string name="bitacora_bio_arrival">Llegada Biométrico</string>
+    <string name="bitacora_add">Iniciar Comisión</string>
+    <string name="bitacora_success">Registro guardado localmente</string>
+    <string name="bitacora_error_bio">Ingresa la hora de salida del biométrico</string>
+    <string name="bitacora_error_fields">Completa las horas</string>
+    <string name="bitacora_started">Comisión iniciada</string>
+    <string name="bitacora_completed">Ruta completada</string>
+    <string name="bitacora_updated">Hora actualizada</string>
+    <string name="bitacora_deleted">Registro eliminado</string>
+    <string name="bitacora_confirm_delete">¿Desea eliminar el registro?</string>
+    <string name="bitacora_edit_instruction">* Toca un registro para agregar el siguiente paso.</string>
+
+    <!-- Help Dialog -->
+    <string name="help_title">Guía de Uso - DECE Gestión</string>
+    <string name="help_intro">Bienvenido a la plataforma colaborativa de gestión institucional. Aquí puedes:</string>
+    <string name="help_step1">1. Perfil y Personalización: Configura tu institución y elige un color personal. Esto es vital para organizar tus datos y los de tus compañeros.</string>
+    <string name="help_step2">2. Registro de Atenciones: Usa el "Nuevo Formulario" para registrar casos y protocolos. Incluye alertas especiales para Violencia Sexual.</string>
+    <string name="help_step3">3. Seguimiento y Alertas: Recibe notificaciones automáticas de seguimiento con botones directos para contactar vía WhatsApp o llamada.</string>
+    <string name="help_step4">4. Base de Datos / Histórico: Consulta y agrupa casos por grado. Puedes editar o eliminar registros; todo se sincroniza en la nube al instante.</string>
+    <string name="help_step5">5. Widget de Escritorio: Agrega el widget a tu pantalla de inicio para acceder rápidamente a formularios y ver los contadores de tu institución en tiempo real.</string>
+    <string name="help_close">Entendido</string>
+
+    <!-- Login Dialog -->
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="login_email">Correo Electrónico</string>
+    <string name="login_password">Contraseña</string>
+    <string name="login_enter">Ingresar</string>
+    <string name="login_divider">O ingresa con</string>
+    <string name="login_google">Google</string>
+    <string name="login_error_fields">Completa todos los campos</string>
+    <string name="login_error_auth">Error al iniciar sesión</string>
+
+    <!-- Dashboard Categories -->
+    <string name="cat_oficios">Oficios</string>
+    <string name="cat_informes">Informes Técnicos</string>
+    <string name="cat_reporte">Reporte de Violencia</string>
+    <string name="cat_msp">Derivación MSP</string>
+    <string name="cat_udai">Derivación UDAI</string>
+    <string name="marked_label">Marcados: %1$d</string>
+    <string name="loading_inst">Cargando datos de institución…</string>
+
+    <!-- Docs -->
+    <string name="docs_title">Documentación de apoyo</string>
+    <string name="docs_rutas">Rutas y Protocolos</string>
+    <string name="docs_acuerdos">Acuerdos</string>
+    <string name="docs_plantillas">Plantillas</string>
+    <string name="docs_add">Agregar archivos</string>
+    <string name="docs_search_hint">Buscar palabra…</string>
+    <string name="docs_no_matches">No se encontraron coincidencias</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Mi Perfil</string>
+    <string name="profile_personal_data">Datos Personales</string>
+    <string name="profile_full_name">Nombre Completo</string>
+    <string name="profile_id_card">Cédula</string>
+    <string name="profile_institution">Institución</string>
+    <string name="profile_contact_data">Datos de Contacto</string>
+    <string name="profile_email">Correo Electrónico</string>
+    <string name="profile_canton">Cantón</string>
+    <string name="profile_color">Color de Perfil</string>
+    <string name="profile_update">Actualizar Perfil</string>
+    <string name="profile_updated">Perfil actualizado con éxito</string>
+    <string name="profile_update_error">Error al actualizar perfil</string>
+
+    <!-- Register -->
+    <string name="register_title">Registrar</string>
+    <string name="register_error_inst">Selecciona una institución primero</string>
+    <string name="register_db_error">Error en DB: %1$s. Revisa las reglas en Firebase Console.</string>
+    <string name="user_not_registered">Usuario no registrado en DB. Redirigiendo…</string>
+
+    <!-- Common -->
+    <string name="back">Atrás</string>
+    <string name="delete">Eliminar</string>
+    <string name="edit">Editar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="loading">Cargando…</string>
+    <string name="error_occurred">Ocurrió un error</string>
+    <string name="warning">Advertencia</string>
+    <string name="permission_denied">Error: Permiso denegado. Revisa las reglas.</string>
+    <string name="only_owner_can_uncheck">Solo el usuario que marcó puede desmarcar</string>
+    <string name="page_range">%1$d - %2$d</string>
+    <string name="page_count">%1$d/%2$d</string>
+
+    <!-- Widget -->
+    <string name="widget_toggle_desc">Cambiar vista</string>
+    <string name="sync_cloud">Sincronizando con la nube…</string>
+    <string name="offline_active">Modo Offline activado localmente</string>
+    <string name="searching_updates">Buscando actualizaciones…</string>
+    <string name="module_in_dev">Módulo en desarrollo</string>
+    <string name="no_session">Sin sesión</string>
+
+    <!-- Change Password -->
+    <string name="change_password_security">Seguridad</string>
+    <string name="change_password_title">Cambiar Contraseña</string>
+    <string name="change_password_current">Contraseña Actual</string>
+    <string name="change_password_new">Nueva Contraseña</string>
+    <string name="change_password_save">Guardar Cambios</string>
+
+    <!-- App Name Parts -->
+    <string name="app_name_dece">DECE</string>
+    <string name="app_name_gestion">Gestión</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit…
+    </string>
+
+    <!-- Additional Strings -->
+    <string name="login_ingresar">Ingresar</string>
+    <string name="login_registrar">Registrar</string>
+    <string name="login_error_password_wrong">Contraseña incorrecta</string>
+    <string name="login_error_fields_incomplete">Datos incompletos</string>
+    <string name="login_access_restricted">Acceso Restringido</string>
+    <string name="login_password_hint">Ingrese la contraseña para agregar archivos:</string>
+    <string name="login_validate">Validar</string>
+
+    <string name="bitacora_instruction">* Toca un registro para agregar el siguiente paso.</string>
+    <string name="bitacora_step_registered">%1$s registrado</string>
+
+    <string name="docs_repo_selection">Seleccionar Repositorio</string>
+    <string name="docs_new_external_link">Nuevo Enlace Externo</string>
+    <string name="docs_doc_name">Nombre del documento</string>
+    <string name="docs_doc_url_hint">Enlace directo al PDF (Google Drive/GitHub/Web)</string>
+    <string name="docs_save_success">Documento registrado con éxito</string>
+    <string name="docs_delete_title">Eliminar Documento</string>
+    <string name="docs_delete_msg">Para eliminar \'%1$s\', ingrese la contraseña:</string>
+    <string name="docs_deleted_success">Documento eliminado</string>
+
+    <!-- New Form Strings -->
+    <string name="new_form_title">Nuevo Formulario de Atención</string>
+    <string name="new_form_grado">Grado</string>
+    <string name="new_form_paralelo">Paralelo</string>
+    <string name="new_form_student_name">Nombres y Apellidos</string>
+    <string name="new_form_case_type">Tipo de Caso</string>
+    <string name="new_form_custom_case_hint">Especificar tipo de caso</string>
+    <string name="new_form_date">Fecha de Atención</string>
+    <string name="new_form_actions">Acciones Realizadas</string>
+    <string name="new_form_observations">Observaciones</string>
+    <string name="new_form_derived_by">Quien Deriva</string>
+    <string name="new_form_custom_derived_hint">Especificar quien deriva</string>
+    <string name="new_form_save">Guardar Formulario</string>
+    <string name="new_form_success">Formulario guardado con éxito</string>
+
+    <string name="new_form_rep_name">Nombre del Representante</string>
+    <string name="new_form_rep_phone">Teléfono del Representante</string>
+    <string name="new_form_reminder_day">Día del Recordatorio</string>
+    <string name="new_form_reminder_freq">Frecuencia</string>
+
+    <string name="action_recepcion">Recepción y registro de notificación de alerta</string>
+    <string name="action_consolidacion">Consolidación de ficha acumulativa del estudiante</string>
+    <string name="action_ficha_obs">Ficha de observación estudiantil</string>
+    <string name="action_apertura">Apertura y registro formal del caso en el expediente estudiantil</string>
+    <string name="action_consentimiento">Consentimiento informado previo a la entrevista</string>
+    <string name="action_informe_tec">Informe técnico del caso</string>
+    <string name="action_informe_seg">Informe de seguimiento y evolución del caso</string>
+    <string name="action_informe_cierre">Informe de cierre del caso</string>
+    <string name="action_entrevista_est">Entrevista semiestructurada con el/la estudiante</string>
+    <string name="action_entrevista_rep">Entrevista semiestructurada con el/la representante legal</string>
+    <string name="action_entrevista_tut">Entrevista semiestructurada con el/la tutor/a de curso</string>
+    <string name="action_entrevista_doc">Entrevista semiestructurada con docentes de área</string>
+    <string name="action_entrevista_aut">Entrevista semiestructurada con el/la rector/a o autoridad institucional</string>
+    <string name="action_ruta_violencia">Activación de ruta y protocolo frente a situaciones de violencia</string>
+    <string name="action_proto_sexual">Activación de protocolo frente a situaciones de violencia sexual</string>
+    <string name="action_ruta_embarazo">Activación de ruta y protocolo frente a situaciones de embarazo</string>
+    <string name="action_proto_desaparicion">Activación de protocolo frente a situaciones de desaparición</string>
+    <string name="action_proto_suicidio">Activación de protocolo frente a intentos o ideación suicida</string>
+    <string name="action_proto_acoso">Activación de protocolo frente a situaciones de acoso escolar</string>
+    <string name="action_ruta_drogas">Activación de ruta frente a situaciones de uso de alcohol y drogas</string>
+    <string name="action_proto_trata">Activación de protocolo frente a situaciones de trata</string>
+    <string name="action_proto_conductas">Activación de protocolo frente a conductas disruptivas</string>
+    <string name="action_plan_psico">Elaboración y ejecución del plan de atención psicosocial</string>
+    <string name="action_talleres">Talleres e intervenciones grupales de psicoeducación</string>
+    <string name="action_orientacion_fam">Orientación y psicoeducación a la familia</string>
+    <string name="action_reintegracion">Acompañamiento en reintegración escolar post-crisis</string>
+    <string name="action_reunion_inter">Reunión interdisciplinaria con el equipo institucional</string>
+    <string name="action_visita_dom">Visita domiciliaria</string>
+    <string name="action_notif_distrital">Notificación a la Dirección Distrital de Educación</string>
+    <string name="action_firma_acta">Firma de acta de compromiso</string>
+    <string name="action_deriv_msp">Derivación al Ministerio de Salud (área de psicología)</string>
+    <string name="action_deriv_udai">Derivación a la Unidad de Apoyo a la Inclusión (UDAI)</string>
+    <string name="action_deriv_proteccion">Derivación a la Junta Mancomunada de Protección de Derecho</string>
+    <string name="action_deriv_cantonal">Derivación a la Junta Cantonal de Protección de Derechos</string>
+    <string name="action_deriv_fiscalia">Derivación a la Fiscalía General del Estado</string>
+    <string name="action_deriv_judicatura">Derivación al Consejo de la Judicatura</string>
+    <string name="action_deriv_mies">Derivación al MIES</string>
+    <string name="action_coordinacion_dinapen">Coordinación con la DINAPEN</string>
+    <string name="action_seguimiento_caso">Seguimiento del caso</string>
+    <string name="action_notif_cierre">Notificación de cierre del caso</string>
+
+    <!-- Widget Specific Strings -->
+    <string name="widget_setup_profile">Configura Perfil</string>
+    <string name="widget_login">Inicia Sesión</string>
+    <string name="widget_cat_oficios_short">Oficios</string>
+    <string name="widget_cat_informes_short">Info. Tec</string>
+    <string name="widget_cat_reporte_short">Rep.H.V</string>
+    <string name="widget_cat_msp_short">Dv.MSP</string>
+    <string name="widget_cat_udai_short">Dv.UDAI</string>
+    <string name="widget_default_inst">Institución</string>
+    <string name="widget_placeholder_zeros">000</string>
+
+    <!-- History Strings -->
+    <string name="history_title">Base de Datos / Histórico</string>
+    <string name="history_empty">No hay registros guardados</string>
+    <string name="history_grade_label">Grado: %1$s</string>
+    <string name="history_parallel_label">Paralelo: %1$s</string>
+    <string name="history_case_count">%1$d casos</string>
+</resources>

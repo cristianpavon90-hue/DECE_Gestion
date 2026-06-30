@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1010804131651",
+    "firebase_url": "https://decegestin-74092ab5-default-rtdb.firebaseio.com",
+    "project_id": "decegestin-74092ab5",
+    "storage_bucket": "decegestin-74092ab5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1010804131651:android:b870f85c0e02247eb9d1f6",
+        "android_client_info": {
+          "package_name": "com.example.decegestin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1010804131651-k2ni1nbvjgh321ogrn3piujhl8qbee11.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.decegestin",
+            "certificate_hash": "50a4f573d0f13524073188a786145691e24c6a18"
+          }
+        },
+        {
+          "client_id": "1010804131651-f4rlss5c1mc6l4da2r55od69602ude43.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXoF2mY5lAoCBoviYPSfREJ8-FC37xJJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1010804131651-f4rlss5c1mc6l4da2r55od69602ude43.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

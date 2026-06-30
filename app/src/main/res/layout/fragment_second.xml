@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".SecondFragment">
+
+    <!-- Custom Top Bar (Fixed) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="24dp"
+        android:background="@color/blue_background"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/menu_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="16dp"
+            android:contentDescription="@string/menu_content_description"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/avatar_card"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/teal_button"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/avatar_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="CP"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="CP" />
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_bar">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="24dp">
+
+            <!-- Flow for better Grid distribution -->
+            <androidx.constraintlayout.helper.widget.Flow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="item_oficios,item_informes,item_reporte,item_derivacion_msp,item_derivacion_udai"
+                app:flow_horizontalGap="16dp"
+                app:flow_horizontalStyle="spread"
+                app:flow_maxElementsWrap="2"
+                app:flow_verticalGap="48dp"
+                app:flow_wrapMode="aligned"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Item 1: Oficios -->
+            <LinearLayout
+                android:id="@+id/item_oficios"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cat_oficios"
+                    android:textColor="@color/text_gray"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/last_marked_oficios"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="000"
+                    android:textColor="@color/black"
+                    android:textSize="36sp"
+                    tools:text="000" />
+                <TextView
+                    android:id="@+id/total_marked_oficios"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/marked_label"
+                    android:textColor="@color/text_gray"
+                    android:textSize="12sp"
+                    tools:text="Marcados: 0" />
+            </LinearLayout>
+
+            <!-- Item 2: Informes Técnicos -->
+            <LinearLayout
+                android:id="@+id/item_informes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/cat_informes"
+                    android:textColor="@color/text_gray"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/last_marked_informes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="000"
+                    android:textColor="@color/black"
+                    android:textSize="36sp"
+                    tools:text="000" />
+                <TextView
+                    android:id="@+id/total_marked_informes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/marked_label"
+                    android:textColor="@color/text_gray"
+                    android:textSize="12sp"
+                    tools:text="Marcados: 0" />
+            </LinearLayout>
+
+            <!-- Item 3: Reporte de Violencia -->
+            <LinearLayout
+                android:id="@+id/item_reporte"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/cat_reporte"
+                    android:textColor="@color/text_gray"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/last_marked_reporte"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="000"
+                    android:textColor="@color/black"
+                    android:textSize="36sp"
+                    tools:text="000" />
+                <TextView
+                    android:id="@+id/total_marked_reporte"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/marked_label"
+                    android:textColor="@color/text_gray"
+                    android:textSize="12sp"
+                    tools:text="Marcados: 0" />
+            </LinearLayout>
+
+            <!-- Item 4: Derivación MSP -->
+            <LinearLayout
+                android:id="@+id/item_derivacion_msp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/cat_msp"
+                    android:textColor="@color/text_gray"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/last_marked_msp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="000"
+                    android:textColor="@color/black"
+                    android:textSize="36sp"
+                    tools:text="000" />
+                <TextView
+                    android:id="@+id/total_marked_msp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/marked_label"
+                    android:textColor="@color/text_gray"
+                    android:textSize="12sp"
+                    tools:text="Marcados: 0" />
+            </LinearLayout>
+
+            <!-- Item 5: Derivación UDAI -->
+            <LinearLayout
+                android:id="@+id/item_derivacion_udai"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/cat_udai"
+                    android:textColor="@color/text_gray"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/last_marked_udai"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="000"
+                    android:textColor="@color/black"
+                    android:textSize="36sp"
+                    tools:text="000" />
+                <TextView
+                    android:id="@+id/total_marked_udai"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/marked_label"
+                    android:textColor="@color/text_gray"
+                    android:textSize="12sp"
+                    tools:text="Marcados: 0" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

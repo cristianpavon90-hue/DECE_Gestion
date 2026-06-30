@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".NewFormFragment">
+
+    <!-- Custom Top Bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="24dp"
+        android:background="@color/blue_background"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/back_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="16dp"
+            android:contentDescription="@string/back"
+            android:src="@android:drawable/ic_menu_revert"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/new_form_title"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_bar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Student Info Section -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_grado"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/new_form_grado">
+                        <AutoCompleteTextView
+                            android:id="@+id/edit_grado"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_paralelo"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_paralelo">
+                        <AutoCompleteTextView
+                            android:id="@+id/edit_paralelo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_student_name">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_student_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_case_type"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_case_type">
+                        <AutoCompleteTextView
+                            android:id="@+id/edit_case_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_custom_case_type"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_custom_case_hint"
+                        android:visibility="gone">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_custom_case_type"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_derived_by"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_derived_by">
+                        <AutoCompleteTextView
+                            android:id="@+id/edit_derived_by"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_custom_derived_by"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_custom_derived_hint"
+                        android:visibility="gone">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_custom_derived_by"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_date">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="true"
+                            android:focusable="false"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Extra Fields for Sexual Violence (Hidden by default) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/layout_sexual_violence_extras"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:text="Datos de Seguimiento Especial"
+                        android:textColor="@color/black"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/new_form_rep_name">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_rep_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_rep_phone">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_rep_phone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="phone" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_reminder_day">
+                        <AutoCompleteTextView
+                            android:id="@+id/edit_reminder_day"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/new_form_reminder_freq">
+                        <AutoCompleteTextView
+                            android:id="@+id/edit_reminder_freq"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Actions Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/new_form_actions"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:id="@+id/checkbox_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <!-- Checkboxes will be here -->
+                    <CheckBox android:id="@+id/cb_recepcion" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_recepcion" />
+                    <CheckBox android:id="@+id/cb_consolidacion" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_consolidacion" />
+                    <CheckBox android:id="@+id/cb_ficha_obs" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_ficha_obs" />
+                    <CheckBox android:id="@+id/cb_apertura" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_apertura" />
+                    <CheckBox android:id="@+id/cb_consentimiento" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_consentimiento" />
+                    <CheckBox android:id="@+id/cb_informe_tec" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_informe_tec" />
+                    <CheckBox android:id="@+id/cb_informe_seg" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_informe_seg" />
+                    <CheckBox android:id="@+id/cb_informe_cierre" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_informe_cierre" />
+                    <CheckBox android:id="@+id/cb_entrevista_est" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_entrevista_est" />
+                    <CheckBox android:id="@+id/cb_entrevista_rep" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_entrevista_rep" />
+                    <CheckBox android:id="@+id/cb_entrevista_tut" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_entrevista_tut" />
+                    <CheckBox android:id="@+id/cb_entrevista_doc" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_entrevista_doc" />
+                    <CheckBox android:id="@+id/cb_entrevista_aut" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_entrevista_aut" />
+                    <CheckBox android:id="@+id/cb_ruta_violencia" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_ruta_violencia" />
+                    <CheckBox android:id="@+id/cb_proto_sexual" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_proto_sexual" />
+                    <CheckBox android:id="@+id/cb_ruta_embarazo" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_ruta_embarazo" />
+                    <CheckBox android:id="@+id/cb_proto_desaparicion" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_proto_desaparicion" />
+                    <CheckBox android:id="@+id/cb_proto_suicidio" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_proto_suicidio" />
+                    <CheckBox android:id="@+id/cb_proto_acoso" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_proto_acoso" />
+                    <CheckBox android:id="@+id/cb_ruta_drogas" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_ruta_drogas" />
+                    <CheckBox android:id="@+id/cb_proto_trata" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_proto_trata" />
+                    <CheckBox android:id="@+id/cb_proto_conductas" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_proto_conductas" />
+                    <CheckBox android:id="@+id/cb_plan_psico" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_plan_psico" />
+                    <CheckBox android:id="@+id/cb_talleres" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_talleres" />
+                    <CheckBox android:id="@+id/cb_orientacion_fam" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_orientacion_fam" />
+                    <CheckBox android:id="@+id/cb_reintegracion" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_reintegracion" />
+                    <CheckBox android:id="@+id/cb_reunion_inter" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_reunion_inter" />
+                    <CheckBox android:id="@+id/cb_visita_dom" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_visita_dom" />
+                    <CheckBox android:id="@+id/cb_notif_distrital" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_notif_distrital" />
+                    <CheckBox android:id="@+id/cb_firma_acta" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_firma_acta" />
+                    <CheckBox android:id="@+id/cb_deriv_msp" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_deriv_msp" />
+                    <CheckBox android:id="@+id/cb_deriv_udai" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_deriv_udai" />
+                    <CheckBox android:id="@+id/cb_deriv_proteccion" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_deriv_proteccion" />
+                    <CheckBox android:id="@+id/cb_deriv_cantonal" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_deriv_cantonal" />
+                    <CheckBox android:id="@+id/cb_deriv_fiscalia" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_deriv_fiscalia" />
+                    <CheckBox android:id="@+id/cb_deriv_judicatura" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_deriv_judicatura" />
+                    <CheckBox android:id="@+id/cb_deriv_mies" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_deriv_mies" />
+                    <CheckBox android:id="@+id/cb_coordinacion_dinapen" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_coordinacion_dinapen" />
+                    <CheckBox android:id="@+id/cb_seguimiento_caso" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_seguimiento_caso" />
+                    <CheckBox android:id="@+id/cb_notif_cierre" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/action_notif_cierre" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Observation Section -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="@string/new_form_observations">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_observations"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:gravity="top"
+                    android:inputType="textMultiLine" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_save_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:padding="16dp"
+                android:text="@string/new_form_save"
+                android:textAllCaps="false"
+                app:cornerRadius="8dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/progress_saving"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:elevation="10dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

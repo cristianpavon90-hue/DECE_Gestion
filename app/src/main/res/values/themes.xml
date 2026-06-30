@@ -1,0 +1,33 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DECEGestión" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.DECEGestión" parent="Base.Theme.DECEGestión" />
+
+    <style name="NumberBox" parent="">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="NumberBox.Teal">
+        <item name="android:background">@android:drawable/btn_default</item>
+        <item name="android:backgroundTint">@color/teal_button</item>
+    </style>
+
+    <style name="NumberBox.Purple">
+        <item name="android:background">@android:drawable/btn_default</item>
+        <item name="android:backgroundTint">@color/purple_item</item>
+    </style>
+
+    <style name="NumberBox.Gray">
+        <item name="android:background">@android:drawable/btn_default</item>
+        <item name="android:backgroundTint">@color/light_gray_item</item>
+    </style>
+</resources>
