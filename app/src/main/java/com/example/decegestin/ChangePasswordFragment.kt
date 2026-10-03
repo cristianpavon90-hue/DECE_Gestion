@@ -28,6 +28,7 @@ class ChangePasswordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.topBar.applyTopBarPadding()
         
         auth = FirebaseAuth.getInstance()
         
@@ -48,7 +49,7 @@ class ChangePasswordFragment : Fragment() {
                     .addOnSuccessListener {
                         user.updatePassword(newPassword)
                             .addOnSuccessListener {
-                                Toast.makeText(context, "Contraseña actualizada con éxito", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, getString(R.string.success_password_updated), Toast.LENGTH_SHORT).show()
                                 activity?.onBackPressedDispatcher?.onBackPressed()
                             }
                             .addOnFailureListener { e ->
@@ -56,7 +57,7 @@ class ChangePasswordFragment : Fragment() {
                             }
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(context, "Error de autenticación: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, getString(R.string.error_auth_failed, e.message), Toast.LENGTH_SHORT).show()
                     }
             } else {
                 Toast.makeText(context, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show()

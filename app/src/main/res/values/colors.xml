@@ -1,19 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="blue_background">#0D47A1</color>
-    <color name="teal_button">#006064</color>
-    <color name="teal_avatar">#00695C</color>
-    <color name="text_gray">#424242</color>
-    <color name="purple_item">#6200EE</color>
+
+    <!-- Colores Principales de Identidad (Basados en tu Paleta 1) -->
+    <color name="md_theme_primary">#1F69C3</color>        <!-- Azul Principal -->
+    <color name="md_theme_primary_variant">#164E91</color> <!-- Azul Oscuro -->
+    <color name="md_theme_accent">#38C9AB</color>         <!-- Turquesa -->
+    <color name="md_theme_growth_green">#87C878</color>   <!-- Verde Crecimiento -->
+
+    <!-- Colores de Interfaz y Navegación (Menús) -->
+    <color name="menu_background">#FFFFFF</color>         <!-- Blanco limpio -->
+    <color name="menu_item_selected">#E3F2FD</color>      <!-- Azul suave -->
+    <color name="menu_item_unselected">#666666</color>    <!-- Gris oscuro -->
+
+    <!-- Fondos y Superficies de la App -->
+    <color name="app_background">#F2F2F2</color>          <!-- Gris claro -->
+    <color name="surface_card">#FFFFFF</color>            <!-- Blanco -->
+
+    <!-- Textos -->
+    <color name="text_primary">#212121</color>            <!-- Gris casi negro -->
+    <color name="text_secondary">#757575</color>          <!-- Gris medio -->
+    <color name="text_on_primary">#FFFFFF</color>         <!-- Blanco contrastado -->
+
+    <!-- Aliases for compatibility with existing code -->
+    <color name="blue_background">#1F69C3</color>
+    <color name="teal_button">#38C9AB</color>
+    <color name="teal_avatar">#38C9AB</color>
+    <color name="text_gray">#757575</color>
+    <color name="purple_item">#164E91</color>
     <color name="light_gray_item">#D3D3D3</color>
+    <color name="background_color">#F2F2F2</color>
+    <color name="text_primary_color">#212121</color>
+    <color name="card_background">#FFFFFF</color>
 
-    <color name="background_color">#FFFFFFFF</color>
-    <color name="text_primary_color">#FF000000</color>
-    <color name="card_background">#FFFFFFFF</color>
-
-    <!-- User Avatar Colors -->
+    <!-- User Avatar Colors (Preserved for logic) -->
     <color name="avatar_blue">#1565C0</color>
     <color name="avatar_red">#C62828</color>
     <color name="avatar_green">#2E7D32</color>

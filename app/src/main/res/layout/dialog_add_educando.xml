@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/educando_add_teacher"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <EditText
+            android:id="@+id/et_primer_apellido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/educando_primer_apellido"
+            android:inputType="textCapWords" />
+
+        <EditText
+            android:id="@+id/et_segundo_apellido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/educando_segundo_apellido"
+            android:inputType="textCapWords" />
+
+        <EditText
+            android:id="@+id/et_primer_nombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/educando_primer_nombre"
+            android:inputType="textCapWords" />
+
+        <EditText
+            android:id="@+id/et_segundo_nombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/educando_segundo_nombre"
+            android:inputType="textCapWords" />
+
+        <EditText
+            android:id="@+id/et_anio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/educando_anio"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/et_calificacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/educando_calificacion"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/btn_save_educando"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/save" />
+
+    </LinearLayout>
+</ScrollView>

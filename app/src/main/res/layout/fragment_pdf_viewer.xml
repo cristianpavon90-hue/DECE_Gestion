@@ -4,16 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/black"
     tools:context=".PdfViewerFragment">
 
     <!-- Custom Top Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_marginTop="24dp"
-        android:background="@color/blue_background"
+        android:layout_height="wrap_content"
+        android:background="@color/md_theme_primary"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:elevation="0dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -37,33 +39,20 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/white"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_zoom_out"
+            app:layout_constraintEnd_toStartOf="@+id/btn_grid_view"
             app:layout_constraintStart_toEndOf="@id/back_icon"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Visor de PDF" />
+            tools:text="Documento.pdf" />
 
         <ImageButton
-            android:id="@+id/btn_zoom_out"
+            android:id="@+id/btn_grid_view"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/previous"
-            android:src="@android:drawable/divider_horizontal_textfield"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btn_zoom_in"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/white" />
-
-        <ImageButton
-            android:id="@+id/btn_zoom_in"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/next"
-            android:src="@android:drawable/ic_menu_add"
+            android:src="@android:drawable/ic_menu_agenda"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_search_toggle"
             app:layout_constraintTop_toTopOf="parent"
@@ -73,10 +62,20 @@
             android:id="@+id/btn_search_toggle"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginEnd="16dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/docs_search_hint"
             android:src="@android:drawable/ic_menu_search"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_theme_toggle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/btn_theme_toggle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/btn_star_big_on"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -88,7 +87,7 @@
         android:id="@+id/search_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#F5F5F5"
+        android:background="@color/md_theme_primary_variant"
         android:orientation="horizontal"
         android:padding="8dp"
         android:visibility="gone"
@@ -102,7 +101,8 @@
             android:hint="@string/docs_search_hint"
             android:imeOptions="actionSearch"
             android:inputType="text"
-            android:importantForAutofill="no"
+            android:textColor="@color/white"
+            android:textColorHint="#AAA"
             android:textSize="14sp" />
 
         <TextView
@@ -111,7 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
-            android:textColor="@color/text_gray"
+            android:textColor="@color/white"
             android:textSize="12sp"
             tools:text="0/0" />
 
@@ -120,24 +120,105 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/previous"
-            android:src="@android:drawable/arrow_up_float" />
+            android:src="@android:drawable/arrow_up_float"
+            app:tint="@color/white" />
 
         <ImageButton
             android:id="@+id/btn_search_next"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/next"
-            android:src="@android:drawable/arrow_down_float" />
+            android:src="@android:drawable/arrow_down_float"
+            app:tint="@color/white" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pdfRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_bar_layout" />
+        app:layout_constraintTop_toBottomOf="@id/top_bar" />
+
+    <!-- Print Button at Bottom -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_print"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        app:backgroundTint="@color/md_theme_accent"
+        app:srcCompat="@android:drawable/ic_menu_share"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/white" />
+
+    <!-- Grid Thumbnail Overlay -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/grid_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:visibility="gone"
+        android:elevation="10dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/grid_top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/md_theme_primary"
+            android:fitsSystemWindows="true"
+            android:padding="16dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/btn_close_grid"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_menu_revert"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/grid_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_select_pages"
+                app:layout_constraintStart_toEndOf="@id/btn_close_grid"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="INFORME EnF2.pdf" />
+
+            <TextView
+                android:id="@+id/btn_select_pages"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seleccionar"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/gridRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:padding="8dp"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="3"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/grid_top_bar"
+            tools:listitem="@android:layout/simple_list_item_1" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"

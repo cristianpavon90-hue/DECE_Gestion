@@ -14,8 +14,10 @@ googleServices = "4.4.1"
 firebaseBom = "32.8.0"
 playServicesAuth = "21.0.0"
 firebaseAuth = "22.3.1"
+firebaseAppCheck = "17.1.2"
 photoview = "2.3.0"
 lifecycle = "2.6.2"
+balloon = "1.6.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,10 +33,13 @@ androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database-ktx" }
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
+firebase-appcheck = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 chrisbanes-photoview = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photoview" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+skydoves-balloon = { group = "com.github.skydoves", name = "balloon", version.ref = "balloon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.navigation.fragment.findNavController
+import com.example.decegestin.BuildConfig
 import com.example.decegestin.databinding.FragmentFirstBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -40,7 +41,7 @@ class FirstFragment : Fragment() {
                 val account = task.getResult(ApiException::class.java)!!
                 firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
-                showToast("${getString(R.string.login_error_auth)}: ${e.message}")
+                showToast(getString(R.string.error_with_details, getString(R.string.login_error_auth), e.message))
                 setLoading(false)
             }
         } else {
@@ -81,7 +82,7 @@ class FirstFragment : Fragment() {
 
     private fun setupGoogleSignIn() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestIdToken(BuildConfig.WEB_CLIENT_ID)
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
@@ -125,7 +126,7 @@ class FirstFragment : Fragment() {
                             checkUserRegistration(auth.currentUser?.uid ?: "")
                         } else {
                             setLoading(false)
-                            showToast("${getString(R.string.login_error_auth)}: ${task.exception?.message}")
+                            showToast(getString(R.string.error_with_details, getString(R.string.login_error_auth), task.exception?.message))
                         }
                     }
             } else {
@@ -174,7 +175,7 @@ class FirstFragment : Fragment() {
                 if (errorMsg.contains("Permission denied", ignoreCase = true)) {
                     showToast(getString(R.string.permission_denied))
                 } else {
-                    showToast("${getString(R.string.error_occurred)}: $errorMsg")
+                    showToast(getString(R.string.error_with_details, getString(R.string.error_occurred), errorMsg))
                 }
             }
     }

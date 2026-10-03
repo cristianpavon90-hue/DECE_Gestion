@@ -32,9 +32,26 @@
                 android:id="@+id/text_reminder_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_gray"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/text_time_remaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/md_theme_primary"
+                android:textSize="11sp"
+                android:textStyle="italic" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_edit_reminder"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_edit"
+            app:tint="@color/md_theme_accent" />
 
         <ImageButton
             android:id="@+id/btn_delete_reminder"

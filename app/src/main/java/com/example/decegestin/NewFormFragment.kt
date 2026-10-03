@@ -1,13 +1,13 @@
 package com.example.decegestin
 
-import android.app.AlarmManager
 import android.app.DatePickerDialog
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -17,17 +17,19 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.CheckBox
 import android.widget.EditText
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.decegestin.databinding.FragmentNewFormBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.skydoves.balloon.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Fragmento para el registro de nuevas atenciones (Nuevo Formulario).
+ * Fragmento para el registro de nuevas atenciones (Nuevo Formulario / Expediente).
  */
 class NewFormFragment : Fragment() {
 
@@ -38,12 +40,18 @@ class NewFormFragment : Fragment() {
     private val database by lazy { FirebaseDatabase.getInstance().reference }
     private val calendar = Calendar.getInstance()
 
+    private var selectedCategory: String = "Docentes"
     private val derivadoresList = mutableListOf<String>()
     private lateinit var derivadoresAdapter: ArrayAdapter<String>
     private var currentInstitutionKey: String? = null
     private var derivadoresListener: ValueEventListener? = null
-    
+    private var canManageCatalog: Boolean = false
+
     private var editFormId: String? = null
+    private var originalCreatorId: String? = null
+
+    private var originCasillaNumber: Int? = null
+    private var originCategory: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,23 +63,150 @@ class NewFormFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.topBar.applyTopBarPadding()
         setupUI()
         checkEditMode()
+
+        binding.btnTutorial.setOnClickListener { startTutorial() }
+        checkFirstTimeTutorial()
+    }
+
+    private fun checkFirstTimeTutorial() {
+        val uid = auth.currentUser?.uid ?: return
+        val prefs = requireContext().getSharedPreferences("FormTutorialPrefs_$uid", Context.MODE_PRIVATE)
+        val isFirstTime = prefs.getBoolean("tutorial_shown", true)
+        if (isFirstTime) {
+            binding.root.postDelayed({
+                if (_binding != null) startTutorial()
+                prefs.edit { putBoolean("tutorial_shown", false) }
+            }, 800)
+        }
+    }
+
+    private fun startTutorial() {
+        val b1 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.TOP)
+            setArrowPosition(0.5f)
+            setWidthRatio(0.8f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.tut_form_step1))
+            setTextColorResource(R.color.white)
+            setTextSize(14f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        val b2 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.TOP)
+            setArrowPosition(0.5f)
+            setWidthRatio(0.8f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.tut_form_step2))
+            setTextColorResource(R.color.white)
+            setTextSize(14f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        val b3 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.TOP)
+            setArrowPosition(0.5f)
+            setWidthRatio(0.8f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.tut_form_step3))
+            setTextColorResource(R.color.white)
+            setTextSize(14f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        val b4 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.BOTTOM)
+            setArrowPosition(0.5f)
+            setWidthRatio(0.8f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.tut_form_step4))
+            setTextColorResource(R.color.white)
+            setTextSize(14f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        b1.showAlignBottom(binding.editStudentName)
+        b1.setOnBalloonDismissListener {
+            if (_binding != null) b2.showAlignBottom(binding.editDerivedCategory)
+        }
+        b2.setOnBalloonDismissListener {
+            if (_binding != null) {
+                if (binding.layoutSexualViolenceExtras.visibility == View.VISIBLE) {
+                    b3.showAlignBottom(binding.editRepName)
+                } else {
+                    b4.showAlignTop(binding.buttonSaveForm)
+                }
+            }
+        }
+        b3.setOnBalloonDismissListener {
+            if (_binding != null) b4.showAlignTop(binding.buttonSaveForm)
+        }
     }
 
     private fun checkEditMode() {
         arguments?.let { bundle ->
             editFormId = bundle.getString("formId")
-            if (editFormId != null) {
-                // Estamos en modo edición
-                binding.buttonSaveForm.text = "Actualizar Formulario"
-                
+            originalCreatorId = bundle.getString("createdBy")
+
+            if (bundle.containsKey("originCasillaNumber")) {
+                originCasillaNumber = bundle.getInt("originCasillaNumber")
+            }
+            originCategory = bundle.getString("originCategory")
+
+            val originDoc = bundle.getString("originDocument")
+            val prepopulatedName = bundle.getString("studentName")
+            val prepopulatedDate = bundle.getString("date")
+            val prepopulatedCaseType = bundle.getString("caseType")
+
+            if (editFormId == null && originCasillaNumber != null) {
+                // Apertura de expediente desde documento/casilla prioritaria
+                if (!prepopulatedName.isNullOrEmpty()) {
+                    binding.editStudentName.setText(prepopulatedName)
+                }
+                if (!prepopulatedDate.isNullOrEmpty()) {
+                    binding.editDate.setText(prepopulatedDate)
+                }
+                if (!prepopulatedCaseType.isNullOrEmpty()) {
+                    if (AppUtils.caseTypes.contains(prepopulatedCaseType)) {
+                        binding.editCaseType.setText(prepopulatedCaseType, false)
+                    } else {
+                        binding.editCaseType.setText("Otros", false)
+                        binding.layoutCustomCaseType.visibility = View.VISIBLE
+                        binding.editCustomCaseType.setText(prepopulatedCaseType)
+                    }
+                }
+                if (!originDoc.isNullOrEmpty()) {
+                    binding.editObservations.setText("Expediente aperturado a partir del documento prioritario: $originDoc.")
+                }
+            } else if (editFormId != null) {
+                // Modo edición de expediente existente
+                binding.buttonSaveForm.text = getString(R.string.form_updated)
+
                 binding.editStudentName.setText(bundle.getString("studentName"))
                 binding.editGrado.setText(bundle.getString("grado"), false)
                 binding.editParalelo.setText(bundle.getString("paralelo"), false)
                 binding.editDate.setText(bundle.getString("date"))
                 binding.editObservations.setText(bundle.getString("observations"))
-                
+
                 val caseType = bundle.getString("caseType") ?: ""
                 if (AppUtils.caseTypes.contains(caseType)) {
                     binding.editCaseType.setText(caseType, false)
@@ -81,9 +216,16 @@ class NewFormFragment : Fragment() {
                     binding.editCustomCaseType.setText(caseType)
                 }
 
+                val derivedCategory = bundle.getString("derivedCategory") ?: ""
                 val derivedBy = bundle.getString("derivedBy") ?: ""
-                binding.editDerivedBy.setText(derivedBy, false)
-                
+
+                if (derivedCategory.isNotEmpty()) {
+                    binding.editDerivedCategory.setText(derivedCategory, false)
+                    selectedCategory = derivedCategory
+                }
+                val cleanName = if (derivedBy.contains(" (")) derivedBy.substringBefore(" (").trim() else derivedBy
+                binding.editDerivedBy.setText(cleanName, false)
+
                 val selectedActions = bundle.getStringArrayList("selectedActions")
                 selectedActions?.forEach { actionName ->
                     for (i in 0 until binding.checkboxContainer.childCount) {
@@ -121,8 +263,7 @@ class NewFormFragment : Fragment() {
         setupExposedDropdown(binding.editCaseType, caseAdapter)
         binding.editCaseType.setOnItemClickListener { _, _, position, _ ->
             val selected = caseAdapter.getItem(position)
-            
-            // Lógica de visibilidad para Violencia Sexual
+
             binding.layoutSexualViolenceExtras.visibility = if (selected == "Violencia sexual") View.VISIBLE else View.GONE
 
             if (selected == "Otros") {
@@ -135,10 +276,14 @@ class NewFormFragment : Fragment() {
             }
         }
 
-        // 4. Quien deriva
+        // 4. Quien deriva (Categorizado + Smart Selector)
         setupDerivadores()
 
         // 5. Configurar dropdowns de Recordatorio (Seguimiento Especial)
+        val countryCodeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, AppUtils.countryCodes)
+        setupExposedDropdown(binding.editCountryCode, countryCodeAdapter)
+        binding.editCountryCode.setText(AppUtils.countryCodes[0], false)
+
         val dayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, AppUtils.daysOfWeek)
         setupExposedDropdown(binding.editReminderDay, dayAdapter)
 
@@ -156,6 +301,18 @@ class NewFormFragment : Fragment() {
             DatePickerDialog(requireContext(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
         updateDateLabel()
+
+        // Restricción de teléfono sin "0" inicial
+        binding.editRepPhone.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (s != null && s.startsWith("0")) {
+                    s.delete(0, 1)
+                    showToast("Ingresa el teléfono sin el '0' inicial (Ejemplo: 962934745)")
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
         binding.buttonSaveForm.setOnClickListener { saveForm() }
     }
@@ -182,15 +339,26 @@ class NewFormFragment : Fragment() {
     }
 
     private fun setupDerivadores() {
-        derivadoresList.clear()
-        derivadoresList.addAll(AppUtils.defaultDerivadores)
-        
+        val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, AppUtils.derivadorCategorias)
+        setupExposedDropdown(binding.editDerivedCategory, categoryAdapter)
+        binding.editDerivedCategory.setText(selectedCategory, false)
+
+        binding.editDerivedCategory.setOnItemClickListener { _, _, position, _ ->
+            val cat = categoryAdapter.getItem(position) ?: "Docentes"
+            selectedCategory = cat
+            binding.editDerivedBy.text?.clear()
+            binding.layoutCustomDerivedBy.visibility = View.GONE
+            binding.editCustomDerivedBy.text?.clear()
+            loadDerivadoresFromDb(selectedCategory)
+        }
+
         derivadoresAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, derivadoresList)
         setupExposedDropdown(binding.editDerivedBy, derivadoresAdapter)
 
         binding.editDerivedBy.setOnItemClickListener { _, _, position, _ ->
             val selected = derivadoresAdapter.getItem(position)
-            if (selected == "Otros") {
+            val addNewLabel = getString(R.string.derivador_add_new)
+            if (selected == addNewLabel || selected == "Otros" || selected == "Añadir nuevo…") {
                 binding.layoutCustomDerivedBy.visibility = View.VISIBLE
                 binding.editCustomDerivedBy.requestFocus()
                 showKeyboard(binding.editCustomDerivedBy)
@@ -201,59 +369,87 @@ class NewFormFragment : Fragment() {
         }
 
         val handler = Handler(Looper.getMainLooper())
-        val longPressRunnable = Runnable { showDerivadoresManagementDialog() }
+        val longPressRunnable = Runnable {
+            if (canManageCatalog) {
+                showDerivadoresManagementDialog()
+            } else {
+                showToast(getString(R.string.derivador_restricted_msg))
+            }
+        }
 
-        binding.editDerivedBy.setOnTouchListener { v, event ->
+        binding.editDerivedBy.setOnTouchListener { _, event ->
             when (event.action) {
-                MotionEvent.ACTION_DOWN -> handler.postDelayed(longPressRunnable, 5000)
+                MotionEvent.ACTION_DOWN -> handler.postDelayed(longPressRunnable, 3000)
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> handler.removeCallbacks(longPressRunnable)
             }
             if (event.action == MotionEvent.ACTION_UP) {
                 binding.editDerivedBy.showDropDown()
             }
-            false 
+            false
         }
 
         val user = auth.currentUser ?: return
-        database.child("users").child(user.uid).child("institution").get().addOnSuccessListener { snapshot ->
+        database.child("users").child(user.uid).get().addOnSuccessListener { snapshot ->
             if (_binding == null) return@addOnSuccessListener
-            currentInstitutionKey = AppUtils.getSafeKey(snapshot.value?.toString() ?: "General")
-            loadDerivadoresFromDb()
+            val cargo = snapshot.child("cargo").value?.toString() ?: ""
+            val role = snapshot.child("role").value?.toString() ?: ""
+            canManageCatalog = cargo.contains("Institucional", ignoreCase = true) 
+                || cargo.contains("Distrital", ignoreCase = true) 
+                || role == "institucional" || role == "distrital"
+
+            val instName = snapshot.child("institution").value?.toString() ?: "General"
+            currentInstitutionKey = AppUtils.getSafeKey(instName)
+            loadDerivadoresFromDb(selectedCategory)
         }
     }
 
-    private fun loadDerivadoresFromDb() {
+    private fun loadDerivadoresFromDb(category: String) {
         val key = currentInstitutionKey ?: return
-        derivadoresListener = database.child("institutions").child(key).child("derivadores").addValueEventListener(object : ValueEventListener {
+        derivadoresListener?.let {
+            database.child("institutions").child(key).child("derivadores").child(selectedCategory).removeEventListener(it)
+        }
+
+        val ref = database.child("institutions").child(key).child("derivadores").child(category)
+        derivadoresListener = ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (_binding == null) return
                 val updatedList = mutableListOf<String>()
-                if (snapshot.exists()) {
+                val addNewLabel = getString(R.string.derivador_add_new)
+
+                if (snapshot.exists() && snapshot.childrenCount > 0) {
                     for (child in snapshot.children) {
                         val name = child.value?.toString()
-                        if (name != null && name != "Otros") updatedList.add(name)
+                        if (!name.isNullOrEmpty() && name != "Otros" && name != addNewLabel) {
+                            updatedList.add(name)
+                        }
                     }
                 } else {
-                    updatedList.addAll(AppUtils.defaultDerivadores.filter { it != "Otros" })
-                    database.child("institutions").child(key).child("derivadores").setValue(updatedList)
+                    val defaults = AppUtils.defaultDerivadoresCategorias[category] ?: emptyList()
+                    updatedList.addAll(defaults)
+                    ref.setValue(defaults)
                 }
-                
+
                 updatedList.sort()
-                updatedList.add("Otros")
+                updatedList.add(addNewLabel)
 
                 derivadoresList.clear()
                 derivadoresList.addAll(updatedList)
                 derivadoresAdapter.notifyDataSetChanged()
                 binding.editDerivedBy.setAdapter(derivadoresAdapter)
             }
+
             override fun onCancelled(error: DatabaseError) {}
         })
     }
 
     private fun showDerivadoresManagementDialog() {
-        val options = arrayOf("Agregar nuevo", "Eliminar existente", "Restablecer lista")
+        val options = arrayOf(
+            "Agregar nuevo a $selectedCategory",
+            "Eliminar existente de $selectedCategory",
+            "Restablecer categoría $selectedCategory"
+        )
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Gestionar Quien deriva")
+            .setTitle(R.string.dialog_mgmt_derivador)
             .setItems(options) { _, which ->
                 when (which) {
                     0 -> showAddDerivadorDialog()
@@ -265,18 +461,22 @@ class NewFormFragment : Fragment() {
     }
 
     private fun showAddDerivadorDialog() {
-        val input = EditText(requireContext())
-        input.hint = "Nombre del derivador"
+        val input = EditText(requireContext()).apply {
+            hint = "Nombre del derivador"
+        }
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Agregar Derivador")
+            .setTitle("Agregar Derivador ($selectedCategory)")
             .setView(input)
             .setPositiveButton("Guardar") { _, _ ->
                 val name = input.text.toString().trim()
                 if (name.isNotEmpty()) {
                     val key = currentInstitutionKey ?: return@setPositiveButton
-                    val newList = derivadoresList.filter { it != "Otros" }.toMutableList()
-                    newList.add(name)
-                    database.child("institutions").child(key).child("derivadores").setValue(newList)
+                    val addNewLabel = getString(R.string.derivador_add_new)
+                    val newList = derivadoresList.filter { it != "Otros" && it != addNewLabel }.toMutableList()
+                    if (!newList.contains(name)) {
+                        newList.add(name)
+                        database.child("institutions").child(key).child("derivadores").child(selectedCategory).setValue(newList)
+                    }
                 }
             }
             .setNegativeButton("Cancelar", null)
@@ -284,18 +484,19 @@ class NewFormFragment : Fragment() {
     }
 
     private fun showDeleteDerivadorDialog() {
-        val names = derivadoresList.filter { it != "Otros" }.toTypedArray()
+        val addNewLabel = getString(R.string.derivador_add_new)
+        val names = derivadoresList.filter { it != "Otros" && it != addNewLabel }.toTypedArray()
         if (names.isEmpty()) {
-            showToast("No hay nombres para eliminar")
+            showToast(getString(R.string.validation_no_names_delete))
             return
         }
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Eliminar Derivador")
+            .setTitle("Eliminar Derivador ($selectedCategory)")
             .setItems(names) { _, which ->
                 val key = currentInstitutionKey ?: return@setItems
                 val nameToDelete = names[which]
-                val newList = derivadoresList.filter { it != "Otros" && it != nameToDelete }
-                database.child("institutions").child(key).child("derivadores").setValue(newList)
+                val newList = names.filter { it != nameToDelete }
+                database.child("institutions").child(key).child("derivadores").child(selectedCategory).setValue(newList)
             }
             .setNegativeButton("Cancelar", null)
             .show()
@@ -303,11 +504,12 @@ class NewFormFragment : Fragment() {
 
     private fun resetDerivadores() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Restablecer Lista")
-            .setMessage("¿Estás seguro de que deseas restablecer la lista original?")
+            .setTitle(R.string.dialog_reset_list)
+            .setMessage("¿Estás seguro de que deseas restablecer los valores por defecto de $selectedCategory?")
             .setPositiveButton("Sí") { _, _ ->
                 val key = currentInstitutionKey ?: return@setPositiveButton
-                database.child("institutions").child(key).child("derivadores").setValue(AppUtils.defaultDerivadores.filter { it != "Otros" }.toList())
+                val defaults = AppUtils.defaultDerivadoresCategorias[selectedCategory] ?: emptyList()
+                database.child("institutions").child(key).child("derivadores").child(selectedCategory).setValue(defaults)
             }
             .setNegativeButton("No", null)
             .show()
@@ -319,29 +521,42 @@ class NewFormFragment : Fragment() {
     }
 
     private fun saveForm() {
-        val studentName = binding.editStudentName.text.toString().trim()
-        val grado = binding.editGrado.text.toString().trim()
-        val paralelo = binding.editParalelo.text.toString().trim()
-        
-        var caseType = binding.editCaseType.text.toString().trim()
+        val studentName = AppUtils.sanitizeInput(binding.editStudentName.text.toString())
+        val grado = AppUtils.sanitizeInput(binding.editGrado.text.toString())
+        val paralelo = AppUtils.sanitizeInput(binding.editParalelo.text.toString())
+
+        var caseType = AppUtils.sanitizeInput(binding.editCaseType.text.toString())
         if (caseType == "Otros") {
-            caseType = binding.editCustomCaseType.text.toString().trim()
+            caseType = AppUtils.sanitizeInput(binding.editCustomCaseType.text.toString())
             if (caseType.isEmpty()) {
-                showToast("Por favor especifica el tipo de caso")
+                showToast(getString(R.string.validation_specify_case))
                 return
             }
         }
-        
-        val date = binding.editDate.text.toString()
-        val observations = binding.editObservations.text.toString().trim()
-        
-        var derivedBy = binding.editDerivedBy.text.toString().trim()
-        if (derivedBy == "Otros") {
-            derivedBy = binding.editCustomDerivedBy.text.toString().trim()
-            if (derivedBy.isEmpty()) {
-                showToast("Por favor especifica quién deriva")
+
+        val date = AppUtils.sanitizeInput(binding.editDate.text.toString())
+        val observations = AppUtils.sanitizeInput(binding.editObservations.text.toString())
+
+        val derivedCategory = binding.editDerivedCategory.text.toString()
+        var derivedByRaw = AppUtils.sanitizeInput(binding.editDerivedBy.text.toString())
+        val addNewLabel = getString(R.string.derivador_add_new)
+
+        val derivedBy = if (derivedByRaw == addNewLabel || derivedByRaw == "Otros" || derivedByRaw == "Añadir nuevo…") {
+            val custom = AppUtils.sanitizeInput(binding.editCustomDerivedBy.text.toString())
+            if (custom.isEmpty()) {
+                showToast(getString(R.string.validation_specify_derived))
                 return
             }
+            if (canManageCatalog && currentInstitutionKey != null && derivedCategory.isNotEmpty()) {
+                val currentCatalog = derivadoresList.filter { it != "Otros" && it != addNewLabel }.toMutableList()
+                if (!currentCatalog.contains(custom)) {
+                    currentCatalog.add(custom)
+                    database.child("institutions").child(currentInstitutionKey!!).child("derivadores").child(derivedCategory).setValue(currentCatalog)
+                }
+            }
+            custom
+        } else {
+            derivedByRaw
         }
 
         if (studentName.isEmpty() || grado.isEmpty() || paralelo.isEmpty() || caseType.isEmpty() || derivedBy.isEmpty()) {
@@ -349,12 +564,13 @@ class NewFormFragment : Fragment() {
             return
         }
 
-        // Validación extra para Violencia Sexual
         val isSexualViolence = binding.layoutSexualViolenceExtras.visibility == View.VISIBLE
-        val repName = binding.editRepName.text.toString().trim()
-        val repPhone = binding.editRepPhone.text.toString().trim()
-        val reminderDay = binding.editReminderDay.text.toString()
-        val reminderFreq = binding.editReminderFreq.text.toString()
+        val repName = AppUtils.sanitizeInput(binding.editRepName.text.toString())
+        val countryCode = binding.editCountryCode.text.toString()
+        val rawRepPhone = AppUtils.sanitizeInput(binding.editRepPhone.text.toString())
+        val repPhone = AppUtils.formatPhoneNumber(countryCode, rawRepPhone)
+        val reminderDay = AppUtils.sanitizeInput(binding.editReminderDay.text.toString())
+        val reminderFreq = AppUtils.sanitizeInput(binding.editReminderFreq.text.toString())
 
         if (isSexualViolence) {
             if (repName.isEmpty() || repPhone.isEmpty() || reminderDay.isEmpty() || reminderFreq.isEmpty()) {
@@ -365,11 +581,26 @@ class NewFormFragment : Fragment() {
 
         setLoading(true)
         val user = auth.currentUser ?: return
+
+        if (!AppUtils.canMakeRequest(user.uid)) {
+            setLoading(false)
+            showToast(getString(R.string.error_too_many_requests))
+            return
+        }
+
+        if (editFormId != null && originalCreatorId != null && originalCreatorId != user.uid) {
+            setLoading(false)
+            showToast("No tienes permiso para modificar este formulario")
+            return
+        }
+
         val actions = mutableMapOf<String, Boolean>()
         for (i in 0 until binding.checkboxContainer.childCount) {
             val child = binding.checkboxContainer.getChildAt(i)
             if (child is CheckBox && child.isChecked) actions[child.text.toString()] = true
         }
+
+        val formattedDerivedBy = if (derivedCategory.isNotEmpty()) "$derivedBy ($derivedCategory)" else derivedBy
 
         val formData = mutableMapOf<String, Any>(
             "studentName" to studentName,
@@ -379,11 +610,12 @@ class NewFormFragment : Fragment() {
             "date" to date,
             "actions" to actions,
             "observations" to observations,
-            "derivedBy" to derivedBy,
+            "derivedCategory" to derivedCategory,
+            "derivedBy" to formattedDerivedBy,
             "createdBy" to user.uid,
             "timestamp" to ServerValue.TIMESTAMP
         )
-        
+
         if (isSexualViolence) {
             formData["sexualViolenceExtras"] = mapOf(
                 "repName" to repName,
@@ -393,37 +625,56 @@ class NewFormFragment : Fragment() {
             )
         }
 
-        database.child("users").child(user.uid).child("institution").get().addOnSuccessListener { snapshot ->
-            if (_binding == null) return@addOnSuccessListener
-            val institutionName = snapshot.value?.toString()
-            if (institutionName == null) {
-                setLoading(false)
-                showToast("Por favor configura tu institución en el Perfil")
-                return@addOnSuccessListener
-            }
-            
-            val safeKey = AppUtils.getSafeKey(institutionName)
+        val saveToDb = { instKey: String ->
             val formRef = if (editFormId != null) {
-                database.child("institutions").child(safeKey).child("forms").child(editFormId!!)
+                database.child("institutions").child(instKey).child("forms").child(editFormId!!)
             } else {
-                database.child("institutions").child(safeKey).child("forms").push()
+                database.child("institutions").child(instKey).child("forms").push()
             }
 
-            formRef.setValue(formData).addOnSuccessListener {
-                if (_binding == null) return@addOnSuccessListener
-                if (isSexualViolence) {
-                    scheduleReminder(repName, repPhone, reminderDay, reminderFreq, studentName, safeKey)
+            formRef.setValue(formData).addOnCompleteListener { task ->
+                if (_binding == null) return@addOnCompleteListener
+                if (task.isSuccessful) {
+                    val formId = formRef.key ?: ""
+
+                    // Si este expediente se inició a partir de un documento/casilla prioritaria, actualizar la casilla
+                    if (originCasillaNumber != null && !originCategory.isNullOrEmpty()) {
+                        database.child("institutions").child(instKey).child("categories")
+                            .child(originCategory!!).child(originCasillaNumber.toString())
+                            .updateChildren(mapOf("vinculadoAExpediente" to true, "idExpediente" to formId))
+                    }
+
+                    if (isSexualViolence) {
+                        scheduleReminder(repName, repPhone, reminderDay, reminderFreq, studentName, instKey)
+                    }
+                    setLoading(false)
+                    showToast(if (editFormId != null) getString(R.string.form_updated) else getString(R.string.new_form_success))
+                    findNavController().navigateUp()
+                } else {
+                    setLoading(false)
+                    showToast("Error al guardar: ${task.exception?.message}")
                 }
-                setLoading(false)
-                showToast(if (editFormId != null) "Formulario actualizado" else getString(R.string.new_form_success))
-                findNavController().navigateUp()
+            }
+        }
+
+        if (currentInstitutionKey != null) {
+            saveToDb(currentInstitutionKey!!)
+        } else {
+            database.child("users").child(user.uid).child("institution").get().addOnSuccessListener { snapshot ->
+                if (_binding == null) return@addOnSuccessListener
+                val institutionName = snapshot.value?.toString()
+                if (institutionName == null) {
+                    setLoading(false)
+                    showToast(getString(R.string.error_no_inst_profile))
+                    return@addOnSuccessListener
+                }
+                val safeKey = AppUtils.getSafeKey(institutionName)
+                currentInstitutionKey = safeKey
+                saveToDb(safeKey)
             }.addOnFailureListener { e ->
                 setLoading(false)
-                showToast("Error al guardar: ${e.message}")
+                showToast(getString(R.string.error_firebase, e.message))
             }
-        }.addOnFailureListener { e ->
-            setLoading(false)
-            showToast("Error de conexión: ${e.message}")
         }
     }
 
@@ -437,18 +688,9 @@ class NewFormFragment : Fragment() {
             else -> Calendar.MONDAY
         }
 
-        val unDiaMs = AlarmManager.INTERVAL_DAY
-        val intervaloRepeticion = when (frecuenciaStr) {
-            "Semanal" -> unDiaMs * 7
-            "Bisemanal" -> unDiaMs * 14
-            "Mensual" -> unDiaMs * 28
-            else -> unDiaMs * 7
-        }
-
-        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val reminderCalendar = Calendar.getInstance().apply {
             set(Calendar.DAY_OF_WEEK, diaCalendario)
-            set(Calendar.HOUR_OF_DAY, 8) 
+            set(Calendar.HOUR_OF_DAY, 8)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
             if (before(Calendar.getInstance())) {
@@ -457,8 +699,7 @@ class NewFormFragment : Fragment() {
         }
 
         val idUnico = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
-        
-        // Guardar recordatorio en Firebase para poder gestionarlo
+
         val reminderData = mapOf(
             "id" to idUnico,
             "studentName" to student,
@@ -466,6 +707,9 @@ class NewFormFragment : Fragment() {
             "repPhone" to telefono,
             "day" to diaStr,
             "freq" to frecuenciaStr,
+            "hour" to 8,
+            "minute" to 0,
+            "createdBy" to auth.currentUser?.uid as Any,
             "timestamp" to ServerValue.TIMESTAMP
         )
         database.child("institutions").child(instKey).child("reminders").child(idUnico.toString()).setValue(reminderData)
@@ -474,28 +718,18 @@ class NewFormFragment : Fragment() {
             putExtra("nombreRep", nombre)
             putExtra("telefonoRep", telefono)
             putExtra("idCaso", idUnico)
+            putExtra("freq", frecuenciaStr)
+            addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
         }
 
-        val pendingIntent = PendingIntent.getBroadcast(
-            requireContext(),
-            idUnico,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            reminderCalendar.timeInMillis,
-            intervaloRepeticion,
-            pendingIntent
-        )
+        AppUtils.scheduleExactAlarm(requireContext(), idUnico, reminderCalendar.timeInMillis, intent)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         currentInstitutionKey?.let { key ->
-            derivadoresListener?.let { 
-                database.child("institutions").child(key).child("derivadores").removeEventListener(it) 
+            derivadoresListener?.let {
+                database.child("institutions").child(key).child("derivadores").child(selectedCategory).removeEventListener(it)
             }
         }
         _binding = null

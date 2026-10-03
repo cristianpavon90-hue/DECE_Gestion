@@ -1,0 +1,24 @@
+{
+  "rules": {
+    "users": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid == $uid"
+      }
+    },
+    "institutions": {
+      "$instKey": {
+        ".read": "auth != null && root.child('users').child(auth.uid).child('institutionKey').val() == $instKey",
+        ".write": "auth != null && root.child('users').child(auth.uid).child('institutionKey').val() == $instKey"
+      }
+    },
+    "documentation": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "app_config": {
+      ".read": "auth != null",
+      ".write": "false"
+    }
+  }
+}

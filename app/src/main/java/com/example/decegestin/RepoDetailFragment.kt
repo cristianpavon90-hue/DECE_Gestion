@@ -32,6 +32,7 @@ class RepoDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.topBar.applyTopBarPadding()
 
         repoName = arguments?.getString("repoName") ?: "Repositorio"
         binding.repoTitleTop.text = repoName

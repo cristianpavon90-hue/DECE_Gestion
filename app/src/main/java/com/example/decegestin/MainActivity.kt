@@ -1,9 +1,17 @@
 package com.example.decegestin
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.findNavController
@@ -19,6 +27,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.example.decegestin.databinding.ActivityMainBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,9 +37,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var pendingWidgetIntent: android.content.Intent? = null
     
+    private var notifListener: ChildEventListener? = null
+    private var currentNotifRef: DatabaseReference? = null
+    private val appStartTime = System.currentTimeMillis() - 10000
+
     private val authListener = com.google.firebase.auth.FirebaseAuth.AuthStateListener { firebaseAuth ->
         if (firebaseAuth.currentUser != null) {
             tryConsumePendingWidgetIntent()
+            subscribeToInstitutionalTopic()
+            setupInstitutionalNotificationListener()
         }
     }
 
@@ -40,14 +57,48 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Solicitar permisos de notificación en Android 13+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            val requestPermissionLauncher = registerForActivityResult(
+                androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (!isGranted) {
+                    Toast.makeText(this, "Permiso de notificaciones denegado. No recibirá recordatorios.", Toast.LENGTH_LONG).show()
+                }
+            }
+            if (androidx.core.content.ContextCompat.checkSelfPermission(
+                    this,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+
+        // Verificar permiso de alarmas exactas en Android 12+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                    data = android.net.Uri.parse("package:$packageName")
+                }
+                startActivity(intent)
+            }
+        }
+
+        // Suscribir a tópicos institucionales para notificaciones FCM
+        if (com.google.firebase.auth.FirebaseAuth.getInstance().currentUser != null) {
+            subscribeToInstitutionalTopic()
+            setupInstitutionalNotificationListener()
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
             v.setPadding(
                 systemBars.left,
-                systemBars.top,
+                0, // No aplicar padding arriba para que el fragmento cubra la barra de estado
                 systemBars.right,
-                maxOf(systemBars.bottom, ime.bottom)
+                systemBars.bottom
             )
             insets
         }
@@ -88,8 +139,16 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.BitacoraFragment)
                     true
                 }
+                R.id.EducandoFragment -> {
+                    navController.navigate(R.id.EducandoFragment)
+                    true
+                }
                 R.id.menu_history -> {
                     navController.navigate(R.id.HistoryFragment)
+                    true
+                }
+                R.id.SexualViolenceDbFragment -> {
+                    navController.navigate(R.id.SexualViolenceDbFragment)
                     true
                 }
                 R.id.menu_new_form -> {
@@ -106,7 +165,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.menu_sync_now -> {
                     showToast(getString(R.string.sync_cloud))
-                    com.example.decegestin.DashboardWidget.notifyUpdate(this)
+                    DashboardWidget.notifyUpdate(this)
                     true
                 }
                 R.id.menu_offline_mode -> {
@@ -114,7 +173,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.menu_update_app -> {
-                    showToast(getString(R.string.searching_updates))
+                    checkForUpdates()
                     true
                 }
                 else -> {
@@ -151,7 +210,10 @@ class MainActivity : AppCompatActivity() {
             supportActionBar?.hide()
             
             // Ocultar el FAB en la mayoría de las pantallas principales
-            if (destination.id == R.id.FirstFragment || destination.id == R.id.SecondFragment || destination.id == R.id.RegisterFragment) {
+            if (destination.id == R.id.FirstFragment || destination.id == R.id.SecondFragment || 
+                destination.id == R.id.RegisterFragment || destination.id == R.id.EducandoFragment ||
+                destination.id == R.id.PdfViewerFragment || destination.id == R.id.SexualViolenceDbFragment ||
+                destination.id == R.id.SexualViolenceDetailFragment) {
                 binding.fab.visibility = android.view.View.GONE
             } else {
                 binding.fab.visibility = android.view.View.VISIBLE
@@ -178,6 +240,113 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         com.google.firebase.auth.FirebaseAuth.getInstance().removeAuthStateListener(authListener)
+        notifListener?.let { currentNotifRef?.removeEventListener(it) }
+    }
+
+    private fun setupInstitutionalNotificationListener() {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        val database = FirebaseDatabase.getInstance().reference
+
+        database.child("users").child(user.uid).child("institution").get().addOnSuccessListener { snapshot ->
+            val inst = snapshot.value?.toString() ?: return@addOnSuccessListener
+            val safeInstKey = AppUtils.getSafeKey(inst)
+
+            notifListener?.let { currentNotifRef?.removeEventListener(it) }
+            currentNotifRef = database.child("institutions").child(safeInstKey).child("notifications")
+
+            notifListener = currentNotifRef?.addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    val createdBy = snapshot.child("createdBy").value?.toString()
+                    val timestamp = snapshot.child("timestamp").value as? Long ?: 0L
+                    val message = snapshot.child("message").value?.toString() ?: return
+
+                    if (createdBy != user.uid && timestamp > appStartTime) {
+                        showInstitutionalNotification(message)
+                    }
+                }
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+                override fun onChildRemoved(snapshot: DataSnapshot) {}
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+                override fun onCancelled(error: DatabaseError) {}
+            })
+        }
+    }
+
+    private fun showInstitutionalNotification(message: String) {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channelId = "dece_institutional_activity"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, "Actividad Institucional DECE", NotificationManager.IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this, (System.currentTimeMillis() % Int.MAX_VALUE).toInt(),
+            intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val builder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(android.R.drawable.ic_popup_reminder)
+            .setContentTitle("Nueva Entrada Registrada")
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        notificationManager.notify((System.currentTimeMillis() % Int.MAX_VALUE).toInt(), builder)
+    }
+
+    private fun checkForUpdates() {
+        showToast(getString(R.string.searching_updates))
+        val database = FirebaseDatabase.getInstance().reference
+
+        database.child("app_config").child("update").get().addOnSuccessListener { snapshot ->
+            if (!snapshot.exists()) {
+                showToast("Tu aplicación está actualizada (v${BuildConfig.VERSION_NAME})")
+                return@addOnSuccessListener
+            }
+
+            val latestVersionCode = snapshot.child("versionCode").value?.toString()?.toIntOrNull() ?: 1
+            val latestVersionName = snapshot.child("versionName").value?.toString() ?: "1.0"
+            val apkUrl = snapshot.child("apkUrl").value?.toString() ?: ""
+            val changelog = snapshot.child("changelog").value?.toString() ?: "Hay una nueva versión disponible con mejoras."
+
+            if (latestVersionCode > BuildConfig.VERSION_CODE) {
+                com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                    .setTitle("Nueva versión disponible ($latestVersionName)")
+                    .setMessage(changelog)
+                    .setPositiveButton("Descargar") { _, _ ->
+                        if (apkUrl.isNotEmpty()) {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(apkUrl))
+                            startActivity(intent)
+                        } else {
+                            showToast("Enlace de descarga no disponible")
+                        }
+                    }
+                    .setNegativeButton("Más tarde", null)
+                    .show()
+            } else {
+                showToast("Tu aplicación está actualizada (v${BuildConfig.VERSION_NAME})")
+            }
+        }.addOnFailureListener {
+            showToast("Error al buscar actualizaciones")
+        }
+    }
+
+    private fun subscribeToInstitutionalTopic() {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        val database = FirebaseDatabase.getInstance().reference
+
+        database.child("users").child(user.uid).child("institution").get().addOnSuccessListener { snapshot ->
+            val inst = snapshot.value?.toString() ?: return@addOnSuccessListener
+            val safeInstKey = AppUtils.getSafeKey(inst)
+            FirebaseMessaging.getInstance().subscribeToTopic("inst_$safeInstKey")
+        }
     }
 
     // Permitir abrir el drawer desde los fragmentos

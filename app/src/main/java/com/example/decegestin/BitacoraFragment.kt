@@ -3,6 +3,7 @@ package com.example.decegestin
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
+import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.decegestin.databinding.FragmentBitacoraBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.skydoves.balloon.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
@@ -40,10 +42,87 @@ class BitacoraFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.topBar.applyTopBarPadding()
 
         setupUI()
         setupRecyclerView()
         loadRecords()
+        
+        // Mostrar tutorial si es la primera vez o al tocar el icono
+        binding.btnTutorial.setOnClickListener { startTutorial() }
+        
+        checkFirstTimeTutorial()
+    }
+
+    private fun checkFirstTimeTutorial() {
+        val uid = auth.currentUser?.uid ?: return
+        val prefs = requireContext().getSharedPreferences("BitacoraPrefs_$uid", Context.MODE_PRIVATE)
+        val isFirstTime = prefs.getBoolean("tutorial_shown", true)
+        if (isFirstTime) {
+            binding.root.postDelayed({
+                if (_binding != null) startTutorial()
+                prefs.edit(commit = false) { putBoolean("tutorial_shown", false) }
+            }, 500)
+        }
+    }
+
+    private fun startTutorial() {
+        val balloon1 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.TOP)
+            setArrowPosition(0.3f)
+            setWidthRatio(0.7f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.bitacora_tut_step1_msg))
+            setTextColorResource(R.color.white)
+            setTextSize(15f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        val balloon2 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.TOP)
+            setArrowPosition(0.5f)
+            setWidthRatio(0.8f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.bitacora_tut_step2_msg))
+            setTextColorResource(R.color.white)
+            setTextSize(15f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        val balloon3 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.TOP)
+            setArrowPosition(0.5f)
+            setWidthRatio(0.8f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.bitacora_tut_step3_msg))
+            setTextColorResource(R.color.white)
+            setTextSize(15f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        balloon1.showAlignBottom(binding.layoutBioExit)
+        balloon1.setOnBalloonDismissListener {
+            if (_binding != null) {
+                balloon2.showAlignBottom(binding.recyclerRecords)
+            }
+        }
+        balloon2.setOnBalloonDismissListener {
+            if (_binding != null) {
+                balloon3.showAlignTop(binding.recyclerRecords)
+            }
+        }
     }
 
     private fun setupUI() {
@@ -84,8 +163,8 @@ class BitacoraFragment : Fragment() {
     private fun showTimePicker(onTimeSelected: (String) -> Unit) {
         val calendar = Calendar.getInstance()
         TimePickerDialog(requireContext(), { _, h, m ->
-            onTimeSelected(String.format("%02d:%02d", h, m))
-        }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show()
+            onTimeSelected(String.format(Locale.getDefault(), "%02d:%02d", h, m))
+        }, calendar[Calendar.HOUR_OF_DAY], calendar[Calendar.MINUTE], true).show()
     }
 
     private fun setupRecyclerView() {
@@ -105,7 +184,7 @@ class BitacoraFragment : Fragment() {
                     val cS = record.optString("commExit").ifEmpty { "--:--" }
                     val bLl = record.optString("bioArrival").ifEmpty { "--:--" }
                     
-                    text = "$date | Bio.S: $bS | C.Ll: $cLl | C.S: $cS | Bio.Ll: $bLl"
+                    text = getString(R.string.bitacora_record_format, date, bS, cLl, cS, bLl)
                     textSize = 12f
                     setPadding(32, 32, 32, 32)
                     
@@ -220,7 +299,7 @@ class BitacoraFragment : Fragment() {
         val prefs = requireContext().getSharedPreferences("BitacoraPrefs_$uid", Context.MODE_PRIVATE)
         val arr = JSONArray()
         recordsList.forEach { arr.put(it) }
-        prefs.edit().putString("records", arr.toString()).apply()
+        prefs.edit { putString("records", arr.toString()) }
     }
 
     override fun onDestroyView() {

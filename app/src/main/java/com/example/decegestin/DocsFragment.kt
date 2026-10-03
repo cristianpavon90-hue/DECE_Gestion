@@ -1,19 +1,23 @@
 package com.example.decegestin
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.core.content.edit
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.decegestin.BuildConfig
 import com.example.decegestin.databinding.FragmentDocsBinding
 import com.example.decegestin.databinding.ItemPdfBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.skydoves.balloon.*
 
 class DocsFragment : Fragment() {
 
@@ -22,7 +26,7 @@ class DocsFragment : Fragment() {
 
     private val database = FirebaseDatabase.getInstance().reference
     private val auth = FirebaseAuth.getInstance()
-    
+
     private var adminPasswordFromDb: String? = null
     private var pendingRepo: String? = null
 
@@ -36,6 +40,7 @@ class DocsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.topBar.applyTopBarPadding()
 
         binding.menuIcon.setOnClickListener { (activity as? MainActivity)?.openDrawer() }
         setupUserAvatar()
@@ -50,6 +55,80 @@ class DocsFragment : Fragment() {
         }
 
         fetchAdminConfig()
+
+        binding.btnTutorial.setOnClickListener { startTutorial() }
+        checkFirstTimeTutorial()
+    }
+
+    private fun checkFirstTimeTutorial() {
+        val uid = auth.currentUser?.uid ?: return
+        val prefs = requireContext().getSharedPreferences("DocsTutorialPrefs_$uid", Context.MODE_PRIVATE)
+        val isFirstTime = prefs.getBoolean("tutorial_shown", true)
+        if (isFirstTime) {
+            binding.root.postDelayed({
+                if (_binding != null) startTutorial()
+                prefs.edit { putBoolean("tutorial_shown", false) }
+            }, 800)
+        }
+    }
+
+    private fun startTutorial() {
+        val b1 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.TOP)
+            setArrowPosition(0.5f)
+            setWidthRatio(0.8f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.tut_docs_step1))
+            setTextColorResource(R.color.white)
+            setTextSize(14f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        val b2 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.TOP)
+            setArrowPosition(0.5f)
+            setWidthRatio(0.8f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.tut_docs_step2))
+            setTextColorResource(R.color.white)
+            setTextSize(14f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        val b3 = createBalloon(requireContext()) {
+            setArrowSize(10)
+            setArrowOrientation(ArrowOrientation.BOTTOM)
+            setArrowPosition(0.5f)
+            setWidthRatio(0.8f)
+            setHeight(BalloonSizeSpec.WRAP)
+            setText(getString(R.string.tut_docs_step3))
+            setTextColorResource(R.color.white)
+            setTextSize(14f)
+            setBackgroundColorResource(R.color.md_theme_primary)
+            setBalloonAnimation(BalloonAnimation.ELASTIC)
+            setLifecycleOwner(viewLifecycleOwner)
+            setDismissWhenClicked(true)
+        }
+
+        b1.showAlignBottom(binding.btnOpenRutas)
+        b1.setOnBalloonDismissListener {
+            if (_binding != null) b2.showAlignBottom(binding.containerRutas)
+        }
+        b2.setOnBalloonDismissListener {
+            if (_binding != null) {
+                if (binding.btnAddFiles.visibility == View.VISIBLE) {
+                    b3.showAlignTop(binding.btnAddFiles)
+                }
+            }
+        }
     }
 
     private fun fetchAdminConfig() {
@@ -58,12 +137,14 @@ class DocsFragment : Fragment() {
             adminPasswordFromDb = snapshot.value?.toString()
         }
 
-        // Verificar si el usuario actual es administrador para mostrar/ocultar el botón
+        // Verificar si el usuario actual es administrador o Coordinador Distrital para mostrar/ocultar el botón
         val user = auth.currentUser ?: return
-        database.child("users").child(user.uid).child("role").get().addOnSuccessListener { snapshot ->
+        database.child("users").child(user.uid).get().addOnSuccessListener { snapshot ->
             if (_binding == null) return@addOnSuccessListener
-            val role = snapshot.value?.toString()
-            binding.btnAddFiles.visibility = if (role == "admin") View.VISIBLE else View.GONE
+            val role = snapshot.child("role").value?.toString() ?: ""
+            val cargo = snapshot.child("cargo").value?.toString() ?: ""
+            val canManageDocs = role == "admin" || role == "distrital" || cargo == "Coordinador Distrital"
+            binding.btnAddFiles.visibility = if (canManageDocs) View.VISIBLE else View.GONE
         }
     }
 
@@ -99,7 +180,7 @@ class DocsFragment : Fragment() {
                     container.removeAllViews()
                     for (doc in snapshot.children) {
                         val docId = doc.key ?: ""
-                        val docName = doc.child("name").value?.toString() ?: "Sin nombre"
+                        val docName = doc.child("name").value?.toString() ?: getString(R.string.docs_unnamed)
                         val docUrl = doc.child("url").value?.toString() ?: ""
                         
                         val itemBinding = ItemPdfBinding.inflate(layoutInflater, container, false)
@@ -130,9 +211,9 @@ class DocsFragment : Fragment() {
             .setTitle(R.string.login_access_restricted)
             .setMessage(R.string.login_password_hint)
             .setView(input)
-            .setPositiveButton("Validar") { _, _ ->
+            .setPositiveButton(R.string.login_validate) { _, _ ->
                 val enteredPassword = input.text.toString()
-                if (enteredPassword == adminPasswordFromDb || enteredPassword == "Whx11rqq56") {
+                if (enteredPassword == adminPasswordFromDb || enteredPassword == BuildConfig.ADMIN_PASSWORD) {
                     showRepoSelectionDialog()
                 } else {
                     showToast(getString(R.string.login_error_password_wrong))
@@ -155,7 +236,7 @@ class DocsFragment : Fragment() {
                 pendingRepo = selectedRepo
                 showManualUrlDialog()
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
@@ -173,8 +254,8 @@ class DocsFragment : Fragment() {
             .setTitle(R.string.docs_new_external_link)
             .setView(layout)
             .setPositiveButton(R.string.save) { _, _ ->
-                val name = inputName.text.toString()
-                val url = inputUrl.text.toString()
+                val name = AppUtils.sanitizeInput(inputName.text.toString())
+                val url = AppUtils.sanitizeInput(inputUrl.text.toString())
                 if (name.isNotEmpty() && url.isNotEmpty() && pendingRepo != null) {
                     saveDocToDatabase(name, url, pendingRepo!!)
                 } else {
@@ -186,6 +267,12 @@ class DocsFragment : Fragment() {
     }
 
     private fun saveDocToDatabase(name: String, url: String, repo: String) {
+        val user = auth.currentUser ?: return
+        if (!AppUtils.canMakeRequest(user.uid)) {
+            showToast(getString(R.string.error_too_many_requests))
+            return
+        }
+
         val ref = database.child("documentation").child(repo).push()
         val data = mapOf("name" to name, "url" to url)
         ref.setValue(data).addOnSuccessListener {
@@ -204,7 +291,7 @@ class DocsFragment : Fragment() {
             .setView(input)
             .setPositiveButton(R.string.delete) { _, _ ->
                 val enteredPassword = input.text.toString()
-                if (enteredPassword == adminPasswordFromDb || enteredPassword == "Whx11rqq56") {
+                if (enteredPassword == adminPasswordFromDb || enteredPassword == BuildConfig.ADMIN_PASSWORD) {
                     database.child("documentation").child(category).child(docId).removeValue()
                         .addOnSuccessListener {
                             showToast(getString(R.string.docs_deleted_success))

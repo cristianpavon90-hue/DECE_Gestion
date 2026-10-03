@@ -15,6 +15,7 @@
     <string name="menu_bitacora">Bitácora de Seguimiento</string>
     <string name="menu_new_form">Nuevo Formulario</string>
     <string name="menu_history">Base de Datos / Histórico</string>
+    <string name="menu_sexual_violence_db">BD Violencia Sexual</string>
     <string name="menu_tools">Sección de Herramientas</string>
     <string name="menu_dist">Distribución Institucional (Desarrollo)</string>
     <string name="menu_docs">Documentación de Apoyo</string>
@@ -22,7 +23,20 @@
     <string name="menu_sync_now">Sincronizar ahora</string>
     <string name="menu_offline">Modo Offline</string>
     <string name="menu_update">Actualizar aplicación</string>
+    <string name="menu_educando">Educando en Familia</string>
     <string name="or_divider">O</string>
+
+    <!-- Educando en Familia -->
+    <string name="educando_title">Educando en Familia</string>
+    <string name="educando_add_teacher">Ingresar Datos del Docente</string>
+    <string name="educando_primer_apellido">Primer Apellido</string>
+    <string name="educando_segundo_apellido">Segundo Apellido</string>
+    <string name="educando_primer_nombre">Primer Nombre</string>
+    <string name="educando_segundo_nombre">Segundo Nombre</string>
+    <string name="educando_anio">Año</string>
+    <string name="educando_calificacion">Calificación</string>
+    <string name="educando_summary_header">%1$s, %2$d</string>
+    <string name="educando_summary_stats">Calificación %1$d NºEnF %2$d</string>
 
     <!-- Bitacora -->
     <string name="bitacora_title">Bitácora de Seguimiento</string>
@@ -40,6 +54,17 @@
     <string name="bitacora_deleted">Registro eliminado</string>
     <string name="bitacora_confirm_delete">¿Desea eliminar el registro?</string>
     <string name="bitacora_edit_instruction">* Toca un registro para agregar el siguiente paso.</string>
+
+    <!-- Bitacora Tutorial -->
+    <string name="bitacora_tut_title">Tutorial de Bitácora</string>
+    <string name="bitacora_tut_step1_title">1. Iniciar Comisión</string>
+    <string name="bitacora_tut_step1_msg">Ingresa la hora de salida del biométrico y toca "Iniciar Comisión" para crear un nuevo registro diario.</string>
+    <string name="bitacora_tut_step2_title">2. Flujo Secuencial</string>
+    <string name="bitacora_tut_step2_msg">Toca el registro para agregar los pasos siguientes en orden: 1. Llegada a Comisión, 2. Salida de Comisión y 3. Retorno al Biométrico.</string>
+    <string name="bitacora_tut_step3_title">3. Gestión y Edición</string>
+    <string name="bitacora_tut_step3_msg">¿Te equivocaste? Mantén presionado el registro para corregir cualquier hora o eliminar la fila si es necesario.</string>
+    <string name="bitacora_tut_next">Siguiente</string>
+    <string name="bitacora_tut_finish">Finalizar</string>
 
     <!-- Help Dialog -->
     <string name="help_title">Guía de Uso - DECE Gestión</string>
@@ -92,12 +117,54 @@
     <string name="profile_update">Actualizar Perfil</string>
     <string name="profile_updated">Perfil actualizado con éxito</string>
     <string name="profile_update_error">Error al actualizar perfil</string>
+    <string name="profile_new_period">¿Cómo deseas iniciar el nuevo periodo?</string>
+    <string name="profile_new_period_option_keep">Mantener casos de Violencia Sexual</string>
+    <string name="profile_new_period_option_total">Borrado Total (Reiniciar todo)</string>
+    <string name="profile_new_period_success">Nuevo periodo iniciado con éxito</string>
 
-    <!-- Register -->
+    <!-- Register & RBAC -->
     <string name="register_title">Registrar</string>
     <string name="register_error_inst">Selecciona una institución primero</string>
     <string name="register_db_error">Error en DB: %1$s. Revisa las reglas en Firebase Console.</string>
     <string name="user_not_registered">Usuario no registrado en DB. Redirigiendo…</string>
+    <string name="profile_cargo">Cargo / Perfil</string>
+    <string name="cargo_distrital">Coordinador Distrital</string>
+    <string name="cargo_institucional">Coordinador Institucional</string>
+    <string name="cargo_analista">Analista DECE</string>
+    <string name="register_cedula_unauthorized">Cédula no autorizada. El registro debe ser habilitado previamente por el Coordinador Distrital.</string>
+    <string name="distrital_section_title">Gestión Distrital (Coordinador)</string>
+    <string name="distrital_manage_cedulas">Gestionar Cédulas Autorizadas</string>
+    <string name="distrital_manage_institutions">Gestionar Instituciones</string>
+    <string name="distrital_add_institution">Agregar Nueva Institución</string>
+    <string name="distrital_delete_institution">Eliminar Institución</string>
+    <string name="distrital_add_cedula">Autorizar Nueva Cédula</string>
+    <string name="distrital_delete_cedula">Revocar Cédula</string>
+    <string name="distrital_header">Coordinador</string>
+    <string name="distrital_filter_riesgos">Riesgos psicosociales</string>
+    <string name="distrital_filter_socializaciones">Socializaciones</string>
+    <string name="distrital_no_data">No se registran casos actualmente</string>
+    <string name="otras_atenciones">Otras atenciones</string>
+    <string name="quick_add_title">Nuevo Registro</string>
+
+    <!-- Derivadores Categorizados -->
+    <string name="new_form_derived_category">Categoría de quien deriva</string>
+    <string name="derivador_cat_autoridad">Autoridad</string>
+    <string name="derivador_cat_docentes">Docentes</string>
+    <string name="derivador_cat_representantes">Representantes</string>
+    <string name="derivador_cat_dece">DECE</string>
+    <string name="derivador_add_new">Añadir nuevo…</string>
+    <string name="derivador_restricted_msg">Solo el rol Coordinadora Institucional o Distrital puede modificar el catálogo de derivadores.</string>
+
+    <!-- Expedientes & Casos Prioritarios -->
+    <string name="expediente_priority_title">Caso Prioritario Registrado (#%1$s)</string>
+    <string name="expediente_priority_msg">Se ha registrado un documento de atención prioritaria (%1$s #%2$s). ¿Desea asociarlo a un expediente?</string>
+    <string name="expediente_option_open_new">Abrir nuevo expediente</string>
+    <string name="expediente_option_assign_existing">Asignar a expediente existente (Seguimiento / Ampliación)</string>
+    <string name="expediente_option_only_save">Solo guardar documento</string>
+    <string name="expediente_search_title">Asignar a Expediente Existente</string>
+    <string name="expediente_search_hint">Buscar por nombre o cédula…</string>
+    <string name="expediente_search_empty">No se encontraron expedientes activos</string>
+    <string name="expediente_annexed_success">Documento anexado con éxito al expediente</string>
 
     <!-- Common -->
     <string name="back">Atrás</string>
@@ -171,6 +238,7 @@
     <string name="new_form_custom_derived_hint">Especificar quien deriva</string>
     <string name="new_form_save">Guardar Formulario</string>
     <string name="new_form_success">Formulario guardado con éxito</string>
+    <string name="new_form_special_followup">Datos de Seguimiento Especial</string>
 
     <string name="new_form_rep_name">Nombre del Representante</string>
     <string name="new_form_rep_phone">Teléfono del Representante</string>
@@ -235,4 +303,107 @@
     <string name="history_grade_label">Grado: %1$s</string>
     <string name="history_parallel_label">Paralelo: %1$s</string>
     <string name="history_case_count">%1$d casos</string>
+    <string name="history_summary_title">Resumen Estadístico</string>
+    <string name="period_year">Año</string>
+    <string name="period_month">Mes</string>
+    <string name="period_trimester">Trimestre</string>
+    <string name="period_semester">Semestre</string>
+
+    <!-- Notification Manager -->
+    <string name="notif_manager_title">Gestión de Recordatorios</string>
+    <string name="notif_manager_empty">No hay recordatorios programados</string>
+    <string name="notif_manager_cancelled">Recordatorio cancelado</string>
+    <string name="notif_manager_edit_title">Editar Recordatorio</string>
+    <string name="notif_manager_save">Guardar</string>
+    <string name="notif_manager_updated">Recordatorio actualizado</string>
+    <string name="notif_manager_remaining_days">Faltan %1$d días, %2$d h y %3$d min</string>
+    <string name="notif_manager_remaining_hours">Faltan %1$d h y %2$d min</string>
+    <string name="notif_manager_remaining_minutes">Faltan %1$d min</string>
+    <string name="notif_manager_pick_time">Cambiar Hora</string>
+    <string name="notif_manager_time_label">Hora: %1$02d:%2$02d</string>
+
+    <!-- Tutorials for All Screens -->
+    <string name="tut_dashboard_step1">Toca aquí para abrir el menú lateral y navegar a todos los módulos de la aplicación.</string>
+    <string name="tut_dashboard_step2">Usa el botón "+" para crear rápidamente un nuevo formulario o abrir un expediente de atención.</string>
+    <string name="tut_dashboard_step3">Accede a tu perfil para configurar tu institución, color personal y opciones de Coordinador.</string>
+    <string name="tut_dashboard_step4">Toca cualquier categoría para ingresar al numerador y marcar nuevos números de documentos.</string>
+
+    <string name="tut_form_step1">Completa los nombres del estudiante, grado, fecha y tipo de caso (Violencia sexual desplegará alertas especializadas).</string>
+    <string name="tut_form_step2">Selecciona la categoría de quien deriva y elige un nombre del catálogo inteligente.</string>
+    <string name="tut_form_step3">Si el caso lo requiere, ingresa los datos del representante para programar recordatorios automáticos.</string>
+    <string name="tut_form_step4">Presiona "Guardar Formulario" para registrar el expediente en la nube al instante.</string>
+
+    <string name="tut_history_step1">Filtra tus registros usando estas pestañas: Todos, Solo Estudiantes o Resto de Datos.</string>
+    <string name="tut_history_step2">Toca cualquier tarjeta para editar los datos o presiona el tacho para eliminar.</string>
+    <string name="tut_history_step3">Presiona "Resumen Estadístico" para consultar gráficos y reportes consolidados.</string>
+
+    <string name="tut_sex_db_step1">Esta lista muestra todos los estudiantes registrados con casos de Violencia Sexual.</string>
+    <string name="tut_sex_db_step2">Toca la tarjeta de un estudiante para abrir su expediente acumulativo y ver todos sus seguimientos.</string>
+
+    <string name="tut_sex_detail_step1">Filtra por mes para consultar las acciones realizadas en ese periodo específico.</string>
+    <string name="tut_sex_detail_step2">Presiona "Agregar Seguimiento" para registrar una nueva atención o hito en el caso.</string>
+    <string name="tut_sex_detail_step3">Presiona "Compartir" para generar un reporte consolidado listo para enviar vía WhatsApp o email.</string>
+
+    <string name="tut_educando_step1">Aquí se consolidan los puntajes y capacitaciones de Educando en Familia por docente y año.</string>
+    <string name="tut_educando_step2">Presiona el botón "+" para agregar una nueva calificación de un docente.</string>
+
+    <string name="tut_detail_step1">Toca una casilla gris sin marcar para asignar el número de documento y seleccionar la fecha.</string>
+    <string name="tut_detail_step2">Si el documento es prioritario (Violencia, MSP, UDAI, Riesgo), el sistema te ofrecerá abrir o vincular un expediente.</string>
+    <string name="tut_detail_step3">Presiona el icono de la base de datos para consultar el historial completo de documentos registrados en este numerador.</string>
+
+    <string name="tut_docs_step1">Explora las secciones de Rutas y Protocolos, Acuerdos o Plantillas para acceder a los archivos en PDF.</string>
+    <string name="tut_docs_step2">Toca un documento para leerlo, buscar palabras clave dentro del texto o imprimirlo.</string>
+    <string name="tut_docs_step3">Si eres Coordinador/a, presiona "Agregar archivos" para registrar nuevos enlaces externos a documentos PDF.</string>
+
+    <string name="tut_notif_step1">Consulta aquí la lista de recordatorios activos y el tiempo restante para la próxima alarma.</string>
+    <string name="tut_notif_step2">Usa los botones de cada tarjeta para editar el día/frecuencia o cancelar un recordatorio.</string>
+
+    <!-- Success/Error Messages -->
+    <string name="success_password_updated">Contraseña actualizada con éxito</string>
+    <string name="success_record_saved">Registro guardado</string>
+    <string name="success_record_deleted">Registro eliminado con éxito</string>
+    <string name="error_auth_failed">Error de autenticación: %1$s</string>
+    <string name="error_firebase">Error: %1$s</string>
+    <string name="error_no_inst_profile">Por favor configura tu institución en el Perfil</string>
+
+    <!-- Dialog Titles -->
+    <string name="dialog_confirmation">Confirmación</string>
+    <string name="dialog_mgmt_derivador">Gestionar Quien deriva</string>
+    <string name="dialog_add_derivador">Agregar Derivador</string>
+    <string name="dialog_reset_list">Restablecer Lista</string>
+
+    <!-- Form Validation -->
+    <string name="validation_specify_case">Por favor especifica el tipo de caso</string>
+    <string name="validation_specify_derived">Por favor especifica quién deriva</string>
+    <string name="validation_no_names_delete">No hay nombres para eliminar</string>
+    <string name="form_updated">Formulario actualizado</string>
+    <string name="error_too_many_requests">Demasiadas peticiones. Por favor espera un minuto.</string>
+
+    <string name="profile_accounts">Cuentas</string>
+    <string name="profile_team">Equipo</string>
+    <string name="profile_logout">Cerrar sesión</string>
+    <string name="profile_not_assigned">No asignada</string>
+    <string name="error_with_details">%1$s: %2$s</string>
+    <string name="bitacora_record_format">%1$s | Bio.S: %2$s | C.Ll: %3$s | C.S: %4$s | Bio.Ll: %5$s</string>
+    <string name="docs_unnamed">Sin nombre</string>
+    <string name="doc_date_hint">Fecha del Documento</string>
+    <string name="btn_feedback">Buzón de Sugerencias / Reportar Fallos</string>
+    <string name="feedback_subject">DECE Gestión - Sugerencia / Reporte de Fallo</string>
+    <string name="filter_all">Todos</string>
+    <string name="filter_students_only">Solo Estudiantes</string>
+    <string name="filter_other_data">Resto de Datos</string>
+    <string name="derivacion_details_title">Detalle de Derivación</string>
+    <string name="cita_title">Agendar Cita MSP</string>
+    <string name="cita_date_hint">Fecha de Cita</string>
+    <string name="cita_time_hint">Hora de Cita</string>
+    <string name="cita_num_hint">Número de Cita</string>
+    <string name="notif_action_whatsapp">Enviar WhatsApp</string>
+    <string name="notif_action_call">Llamar</string>
+    <string name="notif_message_whatsapp">Estimado/a %1$s, le saludamos del DECE. Solicitamos su asistencia a la institución para la entrevista de seguimiento programada.</string>
+    <string name="add_followup_title">Agregar Seguimiento</string>
+    <string name="tipo_atencion_hint">Tipo de Atención</string>
+    <string name="card_seguimientos">Seguimientos</string>
+    <string name="card_comunidad">Actividades en torno a la comunidad</string>
+    <string name="card_individuales">Actividades Individuales</string>
+    <string name="hint_month">Mes</string>
 </resources>

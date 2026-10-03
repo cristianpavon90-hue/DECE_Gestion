@@ -1,16 +1,23 @@
 package com.example.decegestin
 
 import android.graphics.Bitmap
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.print.PrintAttributes
+import android.print.PrintDocumentAdapter
+import android.print.PrintManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.decegestin.databinding.FragmentPdfViewerBinding
@@ -18,6 +25,7 @@ import com.github.chrisbanes.photoview.PhotoView
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.parser.PdfTextExtractor
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.net.URL
 import kotlin.concurrent.thread
@@ -29,18 +37,16 @@ class PdfViewerFragment : Fragment() {
 
     private var pdfRenderer: PdfRenderer? = null
     private var fileDescriptor: ParcelFileDescriptor? = null
+    private var pdfFile: File? = null
     private var pdfName: String = ""
 
-    // --- ZOOM ---
-    // zoomLevel solo controla la RESOLUCIÓN de render (calidad del bitmap),
-    // no el zoom visual. El zoom visual real lo maneja PhotoView (gestos + botones lo controlan
-    // a través de su propio setScale).
     private var renderScale = 2.0f
+    private var thumbnailScale = 0.5f
+    private var isNightMode = false
 
-    // --- BÚSQUEDA ---
     private val pageTexts = mutableListOf<String>()
-    private var matchPages = listOf<Int>()      // páginas (índices) donde hay coincidencias
-    private var currentMatchIndex = -1          // posición actual dentro de matchPages
+    private var matchPages = listOf<Int>()
+    private var currentMatchIndex = -1
     private var lastQuery = ""
 
     override fun onCreateView(
@@ -53,11 +59,13 @@ class PdfViewerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.topBar.applyTopBarPadding()
 
         val pdfUrl = arguments?.getString("pdfUrl") ?: ""
         pdfName = arguments?.getString("pdfName") ?: "Documento"
 
         binding.pdfTitleTop.text = pdfName
+        binding.gridTitle.text = pdfName
         binding.backIcon.setOnClickListener { findNavController().navigateUp() }
 
         setupUI()
@@ -73,11 +81,6 @@ class PdfViewerFragment : Fragment() {
                 if (binding.searchBarLayout.visibility == View.VISIBLE) View.GONE else View.VISIBLE
         }
 
-        // --- Zoom con botones: ahora actúa sobre la página VISIBLE actual,
-        // usando PhotoView.setScale(), no sobre el bitmap completo.
-        binding.btnZoomIn.setOnClickListener { zoomCurrentPage(by = 1.25f) }
-        binding.btnZoomOut.setOnClickListener { zoomCurrentPage(by = 0.8f) }
-
         binding.editSearch.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 runSearch(v.text.toString())
@@ -85,23 +88,78 @@ class PdfViewerFragment : Fragment() {
             } else false
         }
 
-        // Botones siguiente / anterior coincidencia (deben existir en el layout,
-        // ver nota al final sobre el XML)
         binding.btnSearchNext.setOnClickListener { goToMatch(currentMatchIndex + 1) }
         binding.btnSearchPrev.setOnClickListener { goToMatch(currentMatchIndex - 1) }
+
+        binding.btnGridView.setOnClickListener {
+            binding.gridViewLayout.visibility = View.VISIBLE
+        }
+
+        binding.btnCloseGrid.setOnClickListener {
+            binding.gridViewLayout.visibility = View.GONE
+        }
+
+        binding.btnPrint.setOnClickListener {
+            pdfFile?.let { printPdf(it) }
+        }
+
+        binding.btnThemeToggle.setOnClickListener {
+            isNightMode = !isNightMode
+            updateTheme()
+        }
     }
 
-    private fun zoomCurrentPage(by: Float) {
-        val lm = binding.pdfRecyclerView.layoutManager as? LinearLayoutManager ?: return
-        val position = lm.findFirstVisibleItemPosition()
-        if (position == RecyclerView.NO_POSITION) return
+    private fun updateTheme() {
+        val bgColor = if (isNightMode) android.graphics.Color.BLACK else android.graphics.Color.parseColor("#F2F2F2")
+        binding.pdfRecyclerView.setBackgroundColor(bgColor)
+        binding.pdfRecyclerView.adapter?.notifyDataSetChanged()
+        
+        // El icono de flecha cambia ligeramente su apariencia para indicar el estado
+        binding.btnThemeToggle.setImageResource(
+            if (isNightMode) android.R.drawable.btn_star_big_on else android.R.drawable.btn_star_big_off
+        )
+    }
 
-        val holder = binding.pdfRecyclerView.findViewHolderForAdapterPosition(position)
-                as? PdfPageAdapter.PageViewHolder ?: return
+    private fun printPdf(file: File) {
+        val printManager = requireContext().getSystemService(android.content.Context.PRINT_SERVICE) as PrintManager
+        val jobName = "${getString(R.string.app_name)} - $pdfName"
+        
+        val printAdapter = object : PrintDocumentAdapter() {
+            override fun onLayout(
+                oldAttributes: PrintAttributes?,
+                newAttributes: PrintAttributes?,
+                cancellationSignal: android.os.CancellationSignal?,
+                callback: LayoutResultCallback?,
+                extras: Bundle?
+            ) {
+                if (cancellationSignal?.isCanceled == true) {
+                    callback?.onLayoutCancelled()
+                    return
+                }
+                val pbi = android.print.PrintDocumentInfo.Builder(pdfName)
+                    .setContentType(android.print.PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
+                    .build()
+                callback?.onLayoutFinished(pbi, true)
+            }
 
-        val photoView = holder.itemView as PhotoView
-        val newScale = (photoView.scale * by).coerceIn(1f, 6f)
-        photoView.setScale(newScale, true)
+            override fun onWrite(
+                pages: Array<out android.print.PageRange>?,
+                destination: ParcelFileDescriptor?,
+                cancellationSignal: android.os.CancellationSignal?,
+                callback: WriteResultCallback?
+            ) {
+                try {
+                    val input = FileInputStream(file)
+                    val output = FileOutputStream(destination?.fileDescriptor)
+                    input.copyTo(output)
+                    callback?.onWriteFinished(arrayOf(android.print.PageRange.ALL_PAGES))
+                } catch (e: Exception) {
+                    callback?.onWriteFailed(e.message)
+                }
+            }
+        }
+
+        printManager.print(jobName, printAdapter, null)
     }
 
     private fun downloadAndRenderPdf(url: String) {
@@ -122,6 +180,7 @@ class PdfViewerFragment : Fragment() {
                         FileOutputStream(file).use { output -> input.copyTo(output) }
                     }
                 }
+                pdfFile = file
 
                 extractText(file)
 
@@ -129,6 +188,7 @@ class PdfViewerFragment : Fragment() {
                     if (_binding == null) return@runOnUiThread
                     binding.progressBar.visibility = View.GONE
                     setupPdfRenderer(file)
+                    updateTheme() // Aplicar tema inicial
                 }
             } catch (e: Exception) {
                 activity?.runOnUiThread {
@@ -149,12 +209,8 @@ class PdfViewerFragment : Fragment() {
                 pageTexts.add(text.lowercase())
             }
             reader.close()
-        } catch (e: Exception) {
-            // Considera loggear el error en vez de tragarlo silenciosamente
-        }
+        } catch (e: Exception) {}
     }
-
-    // --- BÚSQUEDA NAVEGABLE ---
 
     private fun runSearch(query: String) {
         val q = query.trim().lowercase()
@@ -162,14 +218,6 @@ class PdfViewerFragment : Fragment() {
 
         lastQuery = q
         matchPages = pageTexts.indices.filter { pageTexts[it].contains(q) }
-
-        val totalMatches = pageTexts.sumOf { page -> countOccurrences(page, q) }
-        binding.textSearchResult.text = if (matchPages.isEmpty()) {
-            getString(R.string.docs_no_matches)
-        } else {
-            val totalPages = matchPages.size
-            "${currentMatchIndex + 1} / $totalPages ($totalMatches)"
-        }
 
         currentMatchIndex = -1
         if (matchPages.isNotEmpty()) {
@@ -179,18 +227,6 @@ class PdfViewerFragment : Fragment() {
         }
     }
 
-    private fun countOccurrences(text: String, query: String): Int {
-        if (query.isEmpty()) return 0
-        var count = 0
-        var index = text.indexOf(query)
-        while (index != -1) {
-            count++
-            index = text.indexOf(query, index + query.length)
-        }
-        return count
-    }
-
-    /** Navega a la coincidencia en la posición [index] dentro de matchPages, con wrap-around. */
     private fun goToMatch(index: Int) {
         if (matchPages.isEmpty()) return
 
@@ -204,7 +240,7 @@ class PdfViewerFragment : Fragment() {
         (binding.pdfRecyclerView.layoutManager as LinearLayoutManager)
             .scrollToPositionWithOffset(targetPage, 0)
 
-        binding.textSearchResult.text = "${currentMatchIndex + 1} / ${matchPages.size}"
+        binding.textSearchResult.text = getString(R.string.page_count, currentMatchIndex + 1, matchPages.size)
     }
 
     private fun setupPdfRenderer(file: File) {
@@ -213,59 +249,83 @@ class PdfViewerFragment : Fragment() {
             pdfRenderer = PdfRenderer(fileDescriptor!!)
 
             binding.pdfRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-            binding.pdfRecyclerView.setHasFixedSize(false)
-            binding.pdfRecyclerView.adapter = PdfPageAdapter()
+            binding.pdfRecyclerView.adapter = PdfPageAdapter(false)
+
+            binding.gridRecyclerView.layoutManager = GridLayoutManager(requireContext(), 3)
+            binding.gridRecyclerView.adapter = PdfPageAdapter(true)
 
         } catch (e: Exception) {
             showToast(getString(R.string.error_occurred))
         }
     }
 
-    private inner class PdfPageAdapter : RecyclerView.Adapter<PdfPageAdapter.PageViewHolder>() {
+    private inner class PdfPageAdapter(val isThumbnail: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PageViewHolder {
-            // PhotoView reemplaza a ImageView: trae pinch-to-zoom y doble-toque listos.
-            val photoView = PhotoView(parent.context).apply {
-                layoutParams = RecyclerView.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                adjustViewBounds = true
-                scaleType = ImageView.ScaleType.FIT_CENTER
-                minimumScale = 1f
-                maximumScale = 6f
-                // Evita conflicto con el scroll vertical del RecyclerView cuando
-                // el usuario hace zoom y luego intenta hacer panning dentro de la página.
-                setOnScaleChangeListener { _, _, _ ->
-                    binding.pdfRecyclerView.suppressLayout(false)
-                }
-            }
-            return PageViewHolder(photoView)
+        private val nightModeFilter: ColorMatrixColorFilter by lazy {
+            val matrix = ColorMatrix(floatArrayOf(
+                -1f,  0f,  0f, 0f, 255f,
+                 0f, -1f,  0f, 0f, 255f,
+                 0f,  0f, -1f, 0f, 255f,
+                 0f,  0f,  0f, 1f,   0f
+            ))
+            ColorMatrixColorFilter(matrix)
         }
 
-        override fun onBindViewHolder(holder: PageViewHolder, position: Int) {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            return if (isThumbnail) {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_pdf_thumbnail, parent, false)
+                ThumbnailViewHolder(view)
+            } else {
+                val photoView = PhotoView(parent.context).apply {
+                    layoutParams = RecyclerView.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    adjustViewBounds = true
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                }
+                PageViewHolder(photoView)
+            }
+        }
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val renderer = pdfRenderer ?: return
-            val photoView = holder.itemView as PhotoView
-
-            // Resetea el zoom al reciclar la vista, para que no "herede" el zoom
-            // de una página anterior.
-            photoView.setScale(1f, false)
-
             val page = renderer.openPage(position)
 
-            val width = (page.width * renderScale).toInt().coerceAtLeast(1)
-            val height = (page.height * renderScale).toInt().coerceAtLeast(1)
+            val scale = if (isThumbnail) thumbnailScale else renderScale
+            val width = (page.width * scale).toInt().coerceAtLeast(1)
+            val height = (page.height * scale).toInt().coerceAtLeast(1)
 
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
 
-            photoView.setImageBitmap(bitmap)
+            if (holder is PageViewHolder) {
+                val photoView = holder.itemView as PhotoView
+                photoView.setScale(1f, false)
+                photoView.setImageBitmap(bitmap)
+                
+                // Aplicar filtro de inversión solo en modo lectura si isNightMode está activo
+                photoView.colorFilter = if (isNightMode) nightModeFilter else null
+                
+            } else if (holder is ThumbnailViewHolder) {
+                holder.thumbnail.setImageBitmap(bitmap)
+                holder.thumbnail.colorFilter = if (isNightMode) nightModeFilter else null
+                holder.pageNumber.text = (position + 1).toString()
+                holder.itemView.setOnClickListener {
+                    binding.gridViewLayout.visibility = View.GONE
+                    binding.pdfRecyclerView.scrollToPosition(position)
+                }
+            }
             page.close()
         }
 
         override fun getItemCount(): Int = pdfRenderer?.pageCount ?: 0
 
         inner class PageViewHolder(view: View) : RecyclerView.ViewHolder(view)
+        inner class ThumbnailViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val thumbnail: ImageView = view.findViewById(R.id.img_thumbnail)
+            val pageNumber: TextView = view.findViewById(R.id.tv_page_number)
+        }
     }
 
     override fun onDestroyView() {

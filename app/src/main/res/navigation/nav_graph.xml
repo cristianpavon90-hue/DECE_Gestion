@@ -54,6 +54,9 @@
         <action
             android:id="@+id/action_SecondFragment_to_BitacoraFragment"
             app:destination="@id/BitacoraFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_NewFormFragment"
+            app:destination="@id/NewFormFragment" />
     </fragment>
     <fragment
         android:id="@+id/BitacoraFragment"
@@ -121,5 +124,33 @@
         android:id="@+id/HistoryFragment"
         android:name="com.example.decegestin.HistoryFragment"
         android:label="Histórico"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history">
+        <action
+            android:id="@+id/action_HistoryFragment_to_HistorySummaryFragment"
+            app:destination="@id/HistorySummaryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/HistorySummaryFragment"
+        android:name="com.example.decegestin.HistorySummaryFragment"
+        android:label="@string/history_summary_title"
+        tools:layout="@layout/fragment_history_summary" />
+    <fragment
+        android:id="@+id/EducandoFragment"
+        android:name="com.example.decegestin.EducandoFragment"
+        android:label="@string/educando_title"
+        tools:layout="@layout/fragment_educando" />
+    <fragment
+        android:id="@+id/SexualViolenceDbFragment"
+        android:name="com.example.decegestin.SexualViolenceDbFragment"
+        android:label="@string/menu_sexual_violence_db"
+        tools:layout="@layout/fragment_sexual_violence_db">
+        <action
+            android:id="@+id/action_SexualViolenceDbFragment_to_SexualViolenceDetailFragment"
+            app:destination="@id/SexualViolenceDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/SexualViolenceDetailFragment"
+        android:name="com.example.decegestin.SexualViolenceDetailFragment"
+        android:label="Detalle Violencia Sexual"
+        tools:layout="@layout/fragment_sexual_violence_detail" />
 </navigation>

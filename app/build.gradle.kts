@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.services)
@@ -7,6 +9,12 @@ android {
     namespace = "com.example.decegestin"
     compileSdk = 35
 
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localProperties.load(localPropertiesFile.inputStream())
+    }
+
     defaultConfig {
         applicationId = "com.example.decegestin"
         minSdk = 24
@@ -15,6 +23,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "ADMIN_PASSWORD", "\"${localProperties.getProperty("ADMIN_PASSWORD") ?: ""}\"")
+        buildConfigField("String", "WEB_CLIENT_ID", "\"${localProperties.getProperty("WEB_CLIENT_ID") ?: ""}\"")
     }
 
     buildTypes {
@@ -30,6 +41,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     packaging {
@@ -45,6 +57,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.appcheck)
     implementation(libs.play.services.auth)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
@@ -57,6 +71,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation("com.github.skydoves:colorpickerview:2.2.4")
+    implementation(libs.skydoves.balloon)
     implementation("com.itextpdf:itextg:5.5.10") // Librería ligera para búsqueda de texto
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
