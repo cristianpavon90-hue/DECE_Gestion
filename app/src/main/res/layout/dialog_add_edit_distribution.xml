@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/text_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Asignar Curso a Profesional"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- 1. Curso -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_dist_curso"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Curso">
+
+        <AutoCompleteTextView
+            android:id="@+id/edit_dist_curso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Curso"
+            android:inputType="none"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 2. Paralelo -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_dist_paralelo"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Paralelo">
+
+        <AutoCompleteTextView
+            android:id="@+id/edit_dist_paralelo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Paralelo"
+            android:inputType="none"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 3. Docente -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_dist_docente"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Docente / Tutor">
+
+        <AutoCompleteTextView
+            android:id="@+id/edit_dist_docente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Docente / Tutor"
+            android:inputType="textPersonName"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 4. Teléfono -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:hint="Código">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_dist_phone_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="+593"
+                android:textColor="@color/black" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:hint="Teléfono (9 dígitos)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_dist_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:maxLength="10" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <!-- 5. Profesional a cargo -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_dist_profesional"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Profesional a cargo">
+
+        <AutoCompleteTextView
+            android:id="@+id/edit_dist_profesional"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Profesional a cargo"
+            android:inputType="none"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Buttons -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_save_distribution"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="12dp"
+        android:text="Guardar Asignación"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/teal_button"
+        app:cornerRadius="8dp" />
+
+</LinearLayout>

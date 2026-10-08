@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/text_priority_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/expediente_priority_title"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="Caso Prioritario Registrado (#003)" />
+
+    <TextView
+        android:id="@+id/text_priority_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:lineSpacingExtra="4dp"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        tools:text="Se ha registrado un documento de atención prioritaria (Reporte de Violencia #003). ¿Desea asociarlo a un expediente?" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_open_new_expediente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="12dp"
+        android:text="@string/expediente_option_open_new"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/teal_button"
+        app:cornerRadius="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_assign_existing_expediente"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="12dp"
+        android:text="@string/expediente_option_assign_existing"
+        android:textAllCaps="false"
+        android:textColor="@color/md_theme_primary"
+        app:cornerRadius="8dp"
+        app:strokeColor="@color/md_theme_primary" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_only_save_document"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="12dp"
+        android:text="@string/expediente_option_only_save"
+        android:textAllCaps="false"
+        android:textColor="@color/text_gray"
+        app:cornerRadius="8dp"
+        app:strokeColor="@color/text_gray" />
+
+</LinearLayout>

@@ -52,9 +52,11 @@ class DashboardViewModel : ViewModel() {
                 val colorData = snapshot.child("profileColor").value?.toString()
                 _userColor.value = AppUtils.parseColor(colorData, context)
 
-                val cargo = snapshot.child("cargo").value?.toString() ?: ""
-                val role = snapshot.child("role").value?.toString() ?: ""
-                val distrital = cargo == "Coordinador Distrital" || cargo.contains("Distrital", ignoreCase = true) || role == "distrital"
+                val realCargo = snapshot.child("cargo").value?.toString() ?: ""
+                val realRole = snapshot.child("role").value?.toString() ?: ""
+                val activeRole = AppUtils.getActiveRole(context, realRole)
+
+                val distrital = activeRole == "distrital" || activeRole == "admin" || (realRole == "admin" && (activeRole == "distrital" || activeRole == "admin"))
                 _isDistrital.value = distrital
 
                 if (distrital) {

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/text_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/validate_account_title"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/text_user_details"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="#F5F5F5"
+        android:lineSpacingExtra="4dp"
+        android:padding="12dp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        tools:text="Nombre: Cristian Pavón\nCédula: 1723664429\nInstitución: U.E.V.A.A.\nCargo Solicitado: Analista DECE" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layout_select_cargo"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="@string/validate_account_hint_role">
+
+        <AutoCompleteTextView
+            android:id="@+id/edit_select_cargo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/validate_account_hint_role"
+            android:inputType="none"
+            android:textColor="@color/black" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_approve_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:padding="12dp"
+        android:text="@string/validate_account_btn_approve"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/teal_button"
+        app:cornerRadius="8dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_revoke_account"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="12dp"
+        android:text="@string/validate_account_btn_revoke"
+        android:textAllCaps="false"
+        android:textColor="@color/avatar_orange"
+        android:visibility="gone"
+        app:cornerRadius="8dp"
+        app:strokeColor="@color/avatar_orange" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_reject_account"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="12dp"
+        android:text="@string/validate_account_btn_reject"
+        android:textAllCaps="false"
+        android:textColor="@color/avatar_red"
+        app:cornerRadius="8dp"
+        app:strokeColor="@color/avatar_red" />
+
+</LinearLayout>

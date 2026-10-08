@@ -11,21 +11,21 @@ import com.google.firebase.ktx.Firebase
 class DECEApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        
+
         // Forzar Modo Claro siempre en toda la aplicación
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        // Inicializar Firebase y App Check para que solo esta app pueda acceder
-        FirebaseApp.initializeApp(this)
-        Firebase.appCheck.installAppCheckProviderFactory(
-            PlayIntegrityAppCheckProviderFactory.getInstance()
-        )
+        // Inicializar Firebase con protección de excepciones
+        try {
+            FirebaseApp.initializeApp(this)
+            Firebase.appCheck.installAppCheckProviderFactory(
+                PlayIntegrityAppCheckProviderFactory.getInstance()
+            )
+        } catch (_: Exception) {}
 
         // Habilitar persistencia local globalmente para toda la app y el widget
         try {
             FirebaseDatabase.getInstance().setPersistenceEnabled(true)
-        } catch (e: Exception) {
-            // Ya estaba habilitado o error de inicialización
-        }
+        } catch (_: Exception) {}
     }
 }

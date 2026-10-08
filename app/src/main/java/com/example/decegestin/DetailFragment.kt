@@ -289,45 +289,53 @@ class DetailFragment : Fragment() {
         ref: DatabaseReference
     ) {
         val formattedNum = String.format("%03d", number)
-        val options = arrayOf(
-            getString(R.string.expediente_option_open_new),
-            getString(R.string.expediente_option_assign_existing),
-            getString(R.string.expediente_option_only_save)
-        )
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_priority_case_decision, null)
 
-        val msg = getString(R.string.expediente_priority_msg, categoryTitle, formattedNum)
+        val textTitle = dialogView.findViewById<TextView>(R.id.text_priority_title)
+        val textMessage = dialogView.findViewById<TextView>(R.id.text_priority_message)
+        val btnOpenNew = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_open_new_expediente)
+        val btnAssignExisting = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_assign_existing_expediente)
+        val btnOnlySave = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btn_only_save_document)
 
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.expediente_priority_title, formattedNum))
-            .setMessage(msg)
-            .setItems(options) { _, which ->
-                when (which) {
-                    0 -> {
-                        // Opción 1: Abrir nuevo expediente
-                        val bundle = Bundle().apply {
-                            putString("studentName", studentName ?: "")
-                            putString("date", docDate)
-                            putString("originDocument", "$categoryTitle #$formattedNum")
-                            putString("originCategory", categoryTitle)
-                            putInt("originCasillaNumber", number)
-                            putString("caseType", if (!tipoInforme.isNullOrEmpty()) tipoInforme else categoryTitle)
-                        }
-                        findNavController().navigate(R.id.NewFormFragment, bundle)
-                    }
-                    1 -> {
-                        // Opción 2: Asignar a expediente existente
-                        showSearchExistingExpedienteDialog(number, categoryTitle, formattedNum, docDate, studentName, ref)
-                    }
-                    2 -> {
-                        // Opción 3: Solo guardar documento
-                        ref.updateChildren(mapOf("vinculadoAExpediente" to false))
-                        showToast("Documento guardado en el numerador")
-                        updatePage()
-                    }
-                }
+        textTitle.text = getString(R.string.expediente_priority_title, formattedNum)
+        textMessage.text = getString(R.string.expediente_priority_msg, categoryTitle, formattedNum)
+
+        var dialog: androidx.appcompat.app.AlertDialog? = null
+
+        // Opción 1: Abrir nuevo expediente
+        btnOpenNew.setOnClickListener {
+            val bundle = Bundle().apply {
+                putString("studentName", studentName ?: "")
+                putString("date", docDate)
+                putString("originDocument", "$categoryTitle #$formattedNum")
+                putString("originCategory", categoryTitle)
+                putInt("originCasillaNumber", number)
+                putString("caseType", if (!tipoInforme.isNullOrEmpty()) tipoInforme else categoryTitle)
             }
+            dialog?.dismiss()
+            findNavController().navigate(R.id.NewFormFragment, bundle)
+        }
+
+        // Opción 2: Asignar a expediente existente
+        btnAssignExisting.setOnClickListener {
+            dialog?.dismiss()
+            showSearchExistingExpedienteDialog(number, categoryTitle, formattedNum, docDate, studentName, ref)
+        }
+
+        // Opción 3: Solo guardar documento
+        btnOnlySave.setOnClickListener {
+            ref.updateChildren(mapOf("vinculadoAExpediente" to false))
+            showToast("Documento guardado en el numerador")
+            dialog?.dismiss()
+            updatePage()
+        }
+
+        dialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
             .setCancelable(false)
-            .show()
+            .create()
+
+        dialog.show()
     }
 
     private fun showSearchExistingExpedienteDialog(

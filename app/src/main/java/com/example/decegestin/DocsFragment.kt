@@ -11,7 +11,6 @@ import android.widget.LinearLayout
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.decegestin.BuildConfig
 import com.example.decegestin.databinding.FragmentDocsBinding
 import com.example.decegestin.databinding.ItemPdfBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -19,6 +18,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.skydoves.balloon.*
 
+/**
+ * Fragmento de Documentación de Apoyo gestionado mediante RBAC y permisos en la nube.
+ */
 class DocsFragment : Fragment() {
 
     private var _binding: FragmentDocsBinding? = null
@@ -27,7 +29,7 @@ class DocsFragment : Fragment() {
     private val database = FirebaseDatabase.getInstance().reference
     private val auth = FirebaseAuth.getInstance()
 
-    private var adminPasswordFromDb: String? = null
+    private var canManageDocs: Boolean = false
     private var pendingRepo: String? = null
 
     override fun onCreateView(
@@ -51,10 +53,14 @@ class DocsFragment : Fragment() {
         binding.btnOpenPlantillas.setOnClickListener { navigateToRepo("Plantillas") }
 
         binding.btnAddFiles.setOnClickListener {
-            showPasswordDialog()
+            if (canManageDocs) {
+                showRepoSelectionDialog()
+            } else {
+                showToast(getString(R.string.permission_denied))
+            }
         }
 
-        fetchAdminConfig()
+        fetchUserPermissions()
 
         binding.btnTutorial.setOnClickListener { startTutorial() }
         checkFirstTimeTutorial()
@@ -131,19 +137,13 @@ class DocsFragment : Fragment() {
         }
     }
 
-    private fun fetchAdminConfig() {
-        // Cargar contraseña de administrador desde Firebase
-        database.child("app_config").child("admin_password").get().addOnSuccessListener { snapshot ->
-            adminPasswordFromDb = snapshot.value?.toString()
-        }
-
-        // Verificar si el usuario actual es administrador o Coordinador Distrital para mostrar/ocultar el botón
+    private fun fetchUserPermissions() {
         val user = auth.currentUser ?: return
         database.child("users").child(user.uid).get().addOnSuccessListener { snapshot ->
             if (_binding == null) return@addOnSuccessListener
             val role = snapshot.child("role").value?.toString() ?: ""
             val cargo = snapshot.child("cargo").value?.toString() ?: ""
-            val canManageDocs = role == "admin" || role == "distrital" || cargo == "Coordinador Distrital"
+            canManageDocs = role == "admin" || role == "distrital" || role == "institucional" || cargo.contains("Coordinador", ignoreCase = true)
             binding.btnAddFiles.visibility = if (canManageDocs) View.VISIBLE else View.GONE
         }
     }
@@ -156,7 +156,7 @@ class DocsFragment : Fragment() {
                 val colorHex = snapshot.child("profileColor").value?.toString() ?: "#0097A7"
                 try {
                     binding.avatarCard.setCardBackgroundColor(Color.parseColor(colorHex))
-                } catch (e: Exception) {}
+                } catch (_: Exception) {}
             }
         }
     }
@@ -182,7 +182,7 @@ class DocsFragment : Fragment() {
                         val docId = doc.key ?: ""
                         val docName = doc.child("name").value?.toString() ?: getString(R.string.docs_unnamed)
                         val docUrl = doc.child("url").value?.toString() ?: ""
-                        
+
                         val itemBinding = ItemPdfBinding.inflate(layoutInflater, container, false)
                         itemBinding.pdfName.text = docName
                         itemBinding.root.setOnClickListener {
@@ -201,26 +201,6 @@ class DocsFragment : Fragment() {
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
-    }
-
-    private fun showPasswordDialog() {
-        val input = EditText(requireContext())
-        input.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-        
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.login_access_restricted)
-            .setMessage(R.string.login_password_hint)
-            .setView(input)
-            .setPositiveButton(R.string.login_validate) { _, _ ->
-                val enteredPassword = input.text.toString()
-                if (enteredPassword == adminPasswordFromDb || enteredPassword == BuildConfig.ADMIN_PASSWORD) {
-                    showRepoSelectionDialog()
-                } else {
-                    showToast(getString(R.string.login_error_password_wrong))
-                }
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
     }
 
     private fun showRepoSelectionDialog() {
@@ -282,23 +262,23 @@ class DocsFragment : Fragment() {
     }
 
     private fun showDeleteConfirmDialog(category: String, docId: String, docName: String) {
-        val input = EditText(requireContext())
-        input.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-        
+        if (!canManageDocs) {
+            showToast(getString(R.string.permission_denied))
+            return
+        }
+
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.docs_delete_title)
-            .setMessage(getString(R.string.docs_delete_msg, docName))
-            .setView(input)
+            .setMessage("¿Estás seguro de que deseas eliminar el documento \"$docName\"?")
             .setPositiveButton(R.string.delete) { _, _ ->
-                val enteredPassword = input.text.toString()
-                if (enteredPassword == adminPasswordFromDb || enteredPassword == BuildConfig.ADMIN_PASSWORD) {
-                    database.child("documentation").child(category).child(docId).removeValue()
-                        .addOnSuccessListener {
-                            showToast(getString(R.string.docs_deleted_success))
-                        }
-                } else {
-                    showToast(getString(R.string.login_error_password_wrong))
-                }
+                database.child("documentation").child(category).child(docId).removeValue()
+                    .addOnSuccessListener {
+                        showToast(getString(R.string.docs_deleted_success))
+                        loadThumbnails()
+                    }
+                    .addOnFailureListener { e ->
+                        showToast("Error: ${e.message}")
+                    }
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

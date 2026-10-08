@@ -9,7 +9,33 @@ object AppUtils {
     val defaultInstitutions = arrayOf("U.E.V.A.A.", "U.E.Y.", "U.E.P.F.C", "U.E.17.A")
     val institutions = defaultInstitutions
 
-    val cargos = arrayOf("Coordinador Distrital", "Coordinador Institucional", "Analista DECE")
+    val cargos = arrayOf("Coordinador Distrital", "Coordinador Institucional", "Analista DECE", "Administrador General")
+
+    fun getRoleCode(cargo: String): String {
+        return when (cargo) {
+            "Administrador General" -> "admin"
+            "Coordinador Distrital" -> "distrital"
+            "Coordinador Institucional" -> "institucional"
+            else -> "analista"
+        }
+    }
+
+    fun tienePermisoAdmin(rol: String?): Boolean {
+        return rol == "admin" || rol == "distrital"
+    }
+
+    fun getSubnivelForCurso(curso: String): String {
+        val lower = curso.lowercase()
+        return when {
+            lower.contains("inicial") -> "Inicial"
+            lower.contains("1ero") || lower.contains("1ro egb") || lower.contains("preparatoria") -> "Preparatoria"
+            lower.contains("2do egb") || lower.contains("3ero egb") || lower.contains("4to egb") -> "Elemental"
+            lower.contains("5to egb") || lower.contains("6to egb") || lower.contains("7mo egb") -> "Media"
+            lower.contains("8vo egb") || lower.contains("9no egb") || lower.contains("10mo egb") -> "Superior"
+            lower.contains("bgu") || lower.contains("bt") || lower.contains("bachillerato") || lower.contains("1ro bgu") || lower.contains("2do bgu") || lower.contains("3ro bgu") -> "Bachillerato"
+            else -> "Media"
+        }
+    }
 
     val caseTypes = arrayOf(
         "Violencia sexual",
@@ -300,5 +326,67 @@ object AppUtils {
         database.reference.child("authorized_cedulas").child(cleanCedula).removeValue()
             .addOnSuccessListener { onComplete(true, null) }
             .addOnFailureListener { onComplete(false, it.message) }
+    }
+
+    private const val PREFS_NAME = "AdminRoleSimulatorPrefs"
+    private const val KEY_SIMULATED_ROLE = "simulated_role"
+
+    fun getSimulatedRole(context: Context): String? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getString(KEY_SIMULATED_ROLE, null)
+    }
+
+    fun setSimulatedRole(context: Context, role: String?) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        if (role == null || role == "admin") {
+            prefs.edit().remove(KEY_SIMULATED_ROLE).apply()
+        } else {
+            prefs.edit().putString(KEY_SIMULATED_ROLE, role).apply()
+        }
+    }
+
+    fun getActiveRole(context: Context, realRole: String?): String {
+        if (realRole == "admin") {
+            val sim = getSimulatedRole(context)
+            if (!sim.isNullOrEmpty()) return sim
+        }
+        return realRole ?: "analista"
+    }
+
+    fun showRoleSimulationDialog(context: Context, realRole: String?, onRoleChanged: (String) -> Unit) {
+        if (realRole != "admin") return
+
+        val options = arrayOf(
+            context.getString(R.string.role_sim_admin),
+            context.getString(R.string.role_sim_distrital),
+            context.getString(R.string.role_sim_institucional),
+            context.getString(R.string.role_sim_analista)
+        )
+
+        val currentSim = getSimulatedRole(context)
+        val selectedIndex = when (currentSim) {
+            "distrital" -> 1
+            "institucional" -> 2
+            "analista" -> 3
+            else -> 0
+        }
+
+        com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+            .setTitle(R.string.role_simulator_title)
+            .setSingleChoiceItems(options, selectedIndex) { dialog, which ->
+                val newRole = when (which) {
+                    1 -> "distrital"
+                    2 -> "institucional"
+                    3 -> "analista"
+                    else -> "admin"
+                }
+                setSimulatedRole(context, if (newRole == "admin") null else newRole)
+                val activeName = options[which]
+                android.widget.Toast.makeText(context, context.getString(R.string.role_sim_toast_changed, activeName), android.widget.Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+                onRoleChanged(newRole)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 }

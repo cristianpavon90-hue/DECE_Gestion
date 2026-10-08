@@ -1,24 +1,39 @@
 {
   "rules": {
     "users": {
-      ".read": "auth != null",
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin' || !root.child('users').exists())",
       "$uid": {
-        ".write": "auth != null && auth.uid == $uid"
+        ".read": "auth != null && (auth.uid == $uid || (root.child('users').child(auth.uid).child('institutionKey').val() == data.child('institutionKey').val() && root.child('users').child(auth.uid).child('institutionKey').val() != null) || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin')",
+        ".write": "auth != null && (auth.uid == $uid || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin')",
+        "role": {
+          ".validate": "!data.exists() ? (newData.val() == 'analista' || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin' || !root.child('users').exists()) : (newData.val() == data.val() || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin')"
+        },
+        "isApproved": {
+          ".validate": "!data.exists() ? (newData.val() == false || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin' || !root.child('users').exists()) : (newData.val() == data.val() || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin')"
+        },
+        "institutionKey": {
+          ".validate": "!data.exists() || newData.val() == data.val() || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin'"
+        }
       }
     },
     "institutions": {
+      ".read": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin')",
       "$instKey": {
-        ".read": "auth != null && root.child('users').child(auth.uid).child('institutionKey').val() == $instKey",
-        ".write": "auth != null && root.child('users').child(auth.uid).child('institutionKey').val() == $instKey"
+        ".read": "auth != null && (root.child('users').child(auth.uid).child('institutionKey').val() == $instKey || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin')",
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('institutionKey').val() == $instKey || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin')"
       }
+    },
+    "authorized_cedulas": {
+      ".read": "auth != null",
+      ".write": "auth != null && (!data.exists() || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin' || !root.child('authorized_cedulas').exists())"
     },
     "documentation": {
       ".read": "auth != null",
-      ".write": "auth != null"
+      ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'admin' || root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'institucional' || root.child('users').child(auth.uid).child('role').val() == 'analista')"
     },
     "app_config": {
       ".read": "auth != null",
-      ".write": "false"
+      ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() == 'distrital' || root.child('users').child(auth.uid).child('role').val() == 'admin')"
     }
   }
 }

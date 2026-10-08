@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/menu_group_supervision">
+        <menu>
+            <item
+                android:id="@+id/SexualViolenceDbFragment"
+                android:icon="@android:drawable/ic_dialog_alert"
+                android:title="@string/menu_dist_alerts" />
+        </menu>
+    </item>
+
+    <item android:title="@string/menu_group_mgmt">
+        <menu>
+            <item
+                android:id="@+id/ProfesionalesApprovalFragment"
+                android:icon="@android:drawable/ic_menu_myplaces"
+                android:title="@string/menu_dist_approvals" />
+            <item
+                android:id="@+id/InstitucionesCatalogFragment"
+                android:icon="@android:drawable/ic_menu_mapmode"
+                android:title="@string/menu_dist_institutions" />
+        </menu>
+    </item>
+
+    <item android:title="@string/menu_group_reports">
+        <menu>
+            <item
+                android:id="@+id/GeneracionReportesFragment"
+                android:icon="@android:drawable/ic_menu_agenda"
+                android:title="@string/menu_dist_reports" />
+            <item
+                android:id="@+id/DocsFragment"
+                android:icon="@android:drawable/ic_menu_compass"
+                android:title="@string/menu_dist_docs" />
+        </menu>
+    </item>
+</menu>

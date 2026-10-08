@@ -268,14 +268,25 @@
                     android:textStyle="bold" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_approve_users"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="14dp"
+                    android:text="@string/distrital_approve_users"
+                    android:textAllCaps="false"
+                    app:backgroundTint="@color/teal_button"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_manage_institutions"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:padding="14dp"
                     android:text="@string/distrital_manage_institutions"
                     android:textAllCaps="false"
-                    app:backgroundTint="@color/teal_button"
                     app:cornerRadius="8dp" />
 
                 <com.google.android.material.button.MaterialButton
@@ -287,6 +298,18 @@
                     android:padding="14dp"
                     android:text="@string/distrital_manage_cedulas"
                     android:textAllCaps="false"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_simulate_role"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:padding="14dp"
+                    android:text="@string/role_simulator_title"
+                    android:textAllCaps="false"
+                    android:visibility="gone"
                     app:cornerRadius="8dp" />
             </LinearLayout>
 

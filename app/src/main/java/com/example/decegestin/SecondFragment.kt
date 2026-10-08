@@ -276,31 +276,47 @@ class SecondFragment : Fragment() {
 
     private fun showAvatarMenu(view: View) {
         val popup = PopupMenu(requireContext(), view)
-        val user = auth.currentUser
+        val user = auth.currentUser ?: return
 
         val institution = viewModel.institution.value ?: getString(R.string.profile_not_assigned)
 
-        popup.menu.apply {
-            add(getString(R.string.profile_accounts)).isEnabled = false
-            add("  ${user?.email}")
-            add(getString(R.string.profile_team)).isEnabled = false
-            add("  $institution")
+        com.google.firebase.database.FirebaseDatabase.getInstance().reference.child("users").child(user.uid).get().addOnSuccessListener { snapshot ->
+            if (_binding == null) return@addOnSuccessListener
+            val realRole = snapshot.child("role").value?.toString() ?: ""
 
-            add(getString(R.string.profile_title)).setOnMenuItemClickListener {
-                findNavController().navigate(R.id.action_SecondFragment_to_ProfileFragment)
-                true
+            popup.menu.apply {
+                add(getString(R.string.profile_accounts)).isEnabled = false
+                add("  ${user.email}")
+                add(getString(R.string.profile_team)).isEnabled = false
+                add("  $institution")
+
+                if (realRole == "admin") {
+                    val currentSim = AppUtils.getSimulatedRole(requireContext())
+                    val simLabel = if (currentSim != null) " [$currentSim]" else ""
+                    add("${getString(R.string.role_simulator_title)}$simLabel").setOnMenuItemClickListener {
+                        AppUtils.showRoleSimulationDialog(requireContext(), realRole) {
+                            viewModel.startListening(requireContext())
+                        }
+                        true
+                    }
+                }
+
+                add(getString(R.string.profile_title)).setOnMenuItemClickListener {
+                    findNavController().navigate(R.id.action_SecondFragment_to_ProfileFragment)
+                    true
+                }
+                add(getString(R.string.change_password_title)).setOnMenuItemClickListener {
+                    findNavController().navigate(R.id.action_SecondFragment_to_ChangePasswordFragment)
+                    true
+                }
+                add(getString(R.string.profile_logout)).setOnMenuItemClickListener {
+                    auth.signOut()
+                    findNavController().navigate(R.id.action_SecondFragment_logout)
+                    true
+                }
             }
-            add(getString(R.string.change_password_title)).setOnMenuItemClickListener {
-                findNavController().navigate(R.id.action_SecondFragment_to_ChangePasswordFragment)
-                true
-            }
-            add(getString(R.string.profile_logout)).setOnMenuItemClickListener {
-                auth.signOut()
-                findNavController().navigate(R.id.action_SecondFragment_logout)
-                true
-            }
+            popup.show()
         }
-        popup.show()
     }
 
     private fun updateCategoryView(pair: Pair<Int, Int>?, lastText: TextView, totalText: TextView) {
@@ -340,6 +356,16 @@ class SecondFragment : Fragment() {
             val (title, count) = items[position]
             holder.b.textStatTitle.text = title
             holder.b.textStatCount.text = String.format("%04d", count)
+
+            holder.b.root.setOnClickListener {
+                val bundle = Bundle().apply {
+                    putString("riskTitle", title)
+                    putString("filterType", if (currentFilterPosition == 0) "riesgos" else "socializaciones")
+                }
+                try {
+                    findNavController().navigate(R.id.action_SecondFragment_to_DistritalRiskDetailFragment, bundle)
+                } catch (_: Exception) {}
+            }
         }
 
         override fun getItemCount(): Int = items.size

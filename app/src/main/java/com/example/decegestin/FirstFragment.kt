@@ -161,8 +161,17 @@ class FirstFragment : Fragment() {
         setLoading(true)
         database.reference.child("users").child(uid).get()
             .addOnSuccessListener { snapshot ->
+                if (_binding == null) return@addOnSuccessListener
                 if (snapshot.exists()) {
-                    navigateToDashboard()
+                    val role = snapshot.child("role").getValue(String::class.java) ?: "analista"
+                    val isApproved = snapshot.child("isApproved").getValue(Boolean::class.java) ?: false
+
+                    if (role == "admin" || isApproved) {
+                        navigateToDashboard()
+                    } else {
+                        setLoading(false)
+                        findNavController().navigate(R.id.action_FirstFragment_to_PendingApprovalFragment)
+                    }
                 } else {
                     setLoading(false)
                     showToast(getString(R.string.user_not_registered))
@@ -170,6 +179,7 @@ class FirstFragment : Fragment() {
                 }
             }
             .addOnFailureListener { e ->
+                if (_binding == null) return@addOnFailureListener
                 setLoading(false)
                 val errorMsg = e.message ?: ""
                 if (errorMsg.contains("Permission denied", ignoreCase = true)) {

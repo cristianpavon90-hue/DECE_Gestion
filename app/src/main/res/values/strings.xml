@@ -133,7 +133,16 @@
     <string name="cargo_analista">Analista DECE</string>
     <string name="register_cedula_unauthorized">Cédula no autorizada. El registro debe ser habilitado previamente por el Coordinador Distrital.</string>
     <string name="distrital_section_title">Gestión Distrital (Coordinador)</string>
+    <string name="distrital_approve_users">Aprobar Solicitudes de Usuario</string>
     <string name="distrital_manage_cedulas">Gestionar Cédulas Autorizadas</string>
+
+    <!-- Role Simulation Strings -->
+    <string name="role_simulator_title">Simular Perfil / Cambiar Rol de Prueba</string>
+    <string name="role_sim_admin">Administrador General (Real)</string>
+    <string name="role_sim_distrital">Coordinador Distrital (Simulación)</string>
+    <string name="role_sim_institucional">Coordinador Institucional (Simulación)</string>
+    <string name="role_sim_analista">Analista DECE (Simulación)</string>
+    <string name="role_sim_toast_changed">Modo Simulación activo: %1$s</string>
     <string name="distrital_manage_institutions">Gestionar Instituciones</string>
     <string name="distrital_add_institution">Agregar Nueva Institución</string>
     <string name="distrital_delete_institution">Eliminar Institución</string>
@@ -143,8 +152,19 @@
     <string name="distrital_filter_riesgos">Riesgos psicosociales</string>
     <string name="distrital_filter_socializaciones">Socializaciones</string>
     <string name="distrital_no_data">No se registran casos actualmente</string>
+    <string name="distrital_empty_breakdown">No se registran instituciones con 1 o más casos</string>
     <string name="otras_atenciones">Otras atenciones</string>
     <string name="quick_add_title">Nuevo Registro</string>
+
+    <!-- Menu Distrital Strings -->
+    <string name="menu_group_supervision">Supervisión y Alertas</string>
+    <string name="menu_dist_alerts">🚨 Alertas y Casos Críticos</string>
+    <string name="menu_group_mgmt">Gestión y Administración</string>
+    <string name="menu_dist_approvals">👥 Aprobación de Profesionales</string>
+    <string name="menu_dist_institutions">🏛️ Catálogo de Instituciones y Circuitos</string>
+    <string name="menu_group_reports">Reportes y Soporte</string>
+    <string name="menu_dist_reports">📊 Generación de Reportes</string>
+    <string name="menu_dist_docs">📚 Documentación de Apoyo</string>
 
     <!-- Derivadores Categorizados -->
     <string name="new_form_derived_category">Categoría de quien deriva</string>
@@ -165,6 +185,21 @@
     <string name="expediente_search_hint">Buscar por nombre o cédula…</string>
     <string name="expediente_search_empty">No se encontraron expedientes activos</string>
     <string name="expediente_annexed_success">Documento anexado con éxito al expediente</string>
+
+    <!-- Pending Approval Strings -->
+    <string name="pending_approval_title">Cuenta Pendiente de Aprobación</string>
+    <string name="pending_approval_msg">Tu cuenta ha sido creada exitosamente. Tu Coordinador o Administrador Distrital debe autorizar tu acceso antes de que puedas usar la aplicación.</string>
+    <string name="pending_approval_check_status">Comprobar Estado / Reintentar</string>
+    <string name="pending_approval_logout">Cerrar Sesión</string>
+    <string name="pending_approval_still_pending">Su cuenta sigue pendiente de aprobación por el Coordinador Distrital.</string>
+    <string name="pending_approval_success">¡Su cuenta ha sido aprobada exitosamente!</string>
+
+    <!-- Account Validation Strings -->
+    <string name="validate_account_title">Validar Cuenta de Usuario</string>
+    <string name="validate_account_hint_role">Asignar Cargo / Rol</string>
+    <string name="validate_account_btn_approve">Aprobar y Validar Cuenta</string>
+    <string name="validate_account_btn_revoke">Revocar Aprobación</string>
+    <string name="validate_account_btn_reject">Rechazar / Eliminar Cuenta</string>
 
     <!-- Common -->
     <string name="back">Atrás</string>

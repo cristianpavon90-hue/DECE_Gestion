@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_FirstFragment_to_RegisterFragment"
             app:destination="@id/RegisterFragment" />
+        <action
+            android:id="@+id/action_FirstFragment_to_PendingApprovalFragment"
+            app:destination="@id/PendingApprovalFragment" />
     </fragment>
     <fragment
         android:id="@+id/RegisterFragment"
@@ -29,6 +32,27 @@
             android:id="@+id/action_RegisterFragment_to_SecondFragment"
             app:destination="@id/SecondFragment"
             app:popUpTo="@id/RegisterFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_RegisterFragment_to_PendingApprovalFragment"
+            app:destination="@id/PendingApprovalFragment"
+            app:popUpTo="@id/RegisterFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/PendingApprovalFragment"
+        android:name="com.example.decegestin.PendingApprovalFragment"
+        android:label="Cuenta Pendiente"
+        tools:layout="@layout/fragment_pending_approval">
+        <action
+            android:id="@+id/action_PendingApprovalFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment"
+            app:popUpTo="@id/PendingApprovalFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_PendingApprovalFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment"
+            app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
@@ -57,6 +81,9 @@
         <action
             android:id="@+id/action_SecondFragment_to_NewFormFragment"
             app:destination="@id/NewFormFragment" />
+        <action
+            android:id="@+id/action_SecondFragment_to_DistritalRiskDetailFragment"
+            app:destination="@id/DistritalRiskDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/BitacoraFragment"
@@ -153,4 +180,36 @@
         android:name="com.example.decegestin.SexualViolenceDetailFragment"
         android:label="Detalle Violencia Sexual"
         tools:layout="@layout/fragment_sexual_violence_detail" />
+    <fragment
+        android:id="@+id/ProfesionalesApprovalFragment"
+        android:name="com.example.decegestin.ProfesionalesApprovalFragment"
+        android:label="Aprobación de Profesionales"
+        tools:layout="@layout/fragment_profesionales_approval" />
+    <fragment
+        android:id="@+id/InstitucionesCatalogFragment"
+        android:name="com.example.decegestin.InstitucionesCatalogFragment"
+        android:label="Catálogo de Instituciones y Circuitos"
+        tools:layout="@layout/fragment_instituciones_catalog" />
+    <fragment
+        android:id="@+id/GeneracionReportesFragment"
+        android:name="com.example.decegestin.GeneracionReportesFragment"
+        android:label="Generación de Reportes"
+        tools:layout="@layout/fragment_generacion_reportes" />
+    <fragment
+        android:id="@+id/DistritalRiskDetailFragment"
+        android:name="com.example.decegestin.DistritalRiskDetailFragment"
+        android:label="Desglose Institucional"
+        tools:layout="@layout/fragment_distrital_risk_detail">
+        <argument
+            android:name="riskTitle"
+            app:argType="string" />
+        <argument
+            android:name="filterType"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/InstitutionalDistributionFragment"
+        android:name="com.example.decegestin.InstitutionalDistributionFragment"
+        android:label="Distribución Institucional"
+        tools:layout="@layout/fragment_institutional_distribution" />
 </navigation>

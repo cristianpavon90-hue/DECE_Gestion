@@ -77,13 +77,15 @@ class MainActivity : AppCompatActivity() {
 
         // Verificar permiso de alarmas exactas en Android 12+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            val alarmManager = getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
-            if (!alarmManager.canScheduleExactAlarms()) {
-                val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-                    data = android.net.Uri.parse("package:$packageName")
+            try {
+                val alarmManager = getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+                if (!alarmManager.canScheduleExactAlarms()) {
+                    val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                        data = android.net.Uri.parse("package:$packageName")
+                    }
+                    startActivity(intent)
                 }
-                startActivity(intent)
-            }
+            } catch (_: Exception) {}
         }
 
         // Suscribir a tópicos institucionales para notificaciones FCM
@@ -155,6 +157,10 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.NewFormFragment)
                     true
                 }
+                R.id.menu_distribution -> {
+                    navController.navigate(R.id.InstitutionalDistributionFragment)
+                    true
+                }
                 R.id.DocsFragment -> {
                     navController.navigate(R.id.DocsFragment)
                     true
@@ -176,8 +182,20 @@ class MainActivity : AppCompatActivity() {
                     checkForUpdates()
                     true
                 }
+                // Menú Distrital / Admin
+                R.id.ProfesionalesApprovalFragment -> {
+                    navController.navigate(R.id.ProfesionalesApprovalFragment)
+                    true
+                }
+                R.id.InstitucionesCatalogFragment -> {
+                    navController.navigate(R.id.InstitucionesCatalogFragment)
+                    true
+                }
+                R.id.GeneracionReportesFragment -> {
+                    navController.navigate(R.id.GeneracionReportesFragment)
+                    true
+                }
                 else -> {
-                    // Para los "En desarrollo", mostrar un aviso
                     val title = item.title.toString()
                     if (title.contains("(Desarrollo)") || title.contains("Desarrollo")) {
                         showToast(getString(R.string.module_in_dev))
@@ -196,14 +214,11 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             // Bloquear el menú lateral en pantallas de inicio/registro
-            if (destination.id == R.id.FirstFragment || destination.id == R.id.RegisterFragment) {
+            if (destination.id == R.id.FirstFragment || destination.id == R.id.RegisterFragment || destination.id == R.id.PendingApprovalFragment) {
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             } else {
                 binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-                // Actualizar info del encabezado
-                val user = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
-                val header = binding.navView.getHeaderView(0)
-                header.findViewById<android.widget.TextView>(R.id.header_email)?.text = user?.email ?: getString(R.string.no_session)
+                updateDrawerHeaderAndMenu()
             }
 
             // Ocultar siempre la Action Bar por defecto ya que usamos Top Bars personalizadas en los XML
@@ -352,6 +367,42 @@ class MainActivity : AppCompatActivity() {
     // Permitir abrir el drawer desde los fragmentos
     fun openDrawer() {
         binding.drawerLayout.openDrawer(androidx.core.view.GravityCompat.START)
+    }
+
+    private fun updateDrawerHeaderAndMenu() {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        val header = binding.navView.getHeaderView(0)
+        val tvName = header.findViewById<android.widget.TextView>(R.id.header_user_name)
+        val tvRole = header.findViewById<android.widget.TextView>(R.id.header_user_role)
+
+        FirebaseDatabase.getInstance().reference.child("users").child(user.uid).get()
+            .addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) return@addOnSuccessListener
+
+                val fullName = snapshot.child("fullName").value?.toString() ?: user.email ?: ""
+                val cargo = snapshot.child("cargo").value?.toString() ?: ""
+                val realRole = snapshot.child("role").value?.toString() ?: ""
+                val activeRole = AppUtils.getActiveRole(this, realRole)
+
+                val displayRole = when (activeRole) {
+                    "admin" -> "Administrador General"
+                    "distrital" -> "Coordinación Distrital"
+                    "institucional" -> if (cargo.isNotEmpty()) cargo else "Coordinación Institucional"
+                    else -> if (cargo.isNotEmpty()) cargo else "Analista DECE"
+                }
+
+                tvName?.text = fullName
+                tvRole?.text = displayRole
+
+                val isDistritalMenu = activeRole == "distrital" || activeRole == "admin"
+                val currentMenuRes = if (isDistritalMenu) R.menu.drawer_menu_distrital else R.menu.drawer_menu
+
+                if (binding.navView.tag != currentMenuRes) {
+                    binding.navView.tag = currentMenuRes
+                    binding.navView.menu.clear()
+                    binding.navView.inflateMenu(currentMenuRes)
+                }
+            }
     }
 
 
